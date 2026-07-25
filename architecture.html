@@ -1,0 +1,977 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture — Plateforme de Gestion des Actions Sociales · Marsa Maroc</title>
+<style>
+:root{
+  color-scheme: light;
+  --plan:#f4f6f9; --surface:#fff; --surface-2:#f8fafc;
+  --encre:#0b0b0b; --encre-2:#52514e; --muet:#898781;
+  --bordure:rgba(11,11,11,.12); --grille:#e1e0d9;
+  --marine:#0d366b; --marine-clair:#184f95; --accent:#2a78d6; --accent-doux:#cde2fb;
+  --front:#2a78d6; --back:#1baf7a; --ia:#eb6834; --data:#4a3aa7;
+  --bon:#0ca30c; --attention:#fab219; --critique:#d03b3b;
+  --rayon:10px; --ombre:0 1px 2px rgba(11,11,11,.06),0 4px 12px rgba(11,11,11,.05);
+  --police:system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme=light])){
+    color-scheme: dark;
+    --plan:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
+    --encre:#fff; --encre-2:#c3c2b7; --muet:#898781;
+    --bordure:rgba(255,255,255,.14); --grille:#2c2c2a;
+    --marine:#0f3f7d; --marine-clair:#2a6bbd; --accent:#3987e5; --accent-doux:#123a68;
+    --front:#3987e5; --back:#199e70; --ia:#d95926; --data:#9085e9;
+  }
+}
+:root[data-theme=dark]{
+  color-scheme: dark;
+  --plan:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
+  --encre:#fff; --encre-2:#c3c2b7; --muet:#898781;
+  --bordure:rgba(255,255,255,.14); --grille:#2c2c2a;
+  --marine:#0f3f7d; --marine-clair:#2a6bbd; --accent:#3987e5; --accent-doux:#123a68;
+  --front:#3987e5; --back:#199e70; --ia:#d95926; --data:#9085e9;
+}
+
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--police);background:var(--plan);color:var(--encre);
+     font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:660;letter-spacing:-.015em;line-height:1.25}
+p{margin:0 0 .9em}
+code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);
+     border:1px solid var(--bordure);border-radius:5px;padding:1px 5px}
+pre{font-family:var(--mono);font-size:12.6px;line-height:1.6;background:var(--surface-2);
+    border:1px solid var(--bordure);border-radius:var(--rayon);padding:14px 16px;
+    overflow-x:auto;margin:0 0 1em}
+pre code{background:none;border:0;padding:0;font-size:inherit}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+ul,ol{margin:0 0 1em;padding-left:1.25em}
+li{margin-bottom:.35em}
+
+/* ---------- Mise en page ---------- */
+.enveloppe{display:flex;align-items:flex-start;max-width:1400px;margin:0 auto}
+.sommaire{position:sticky;top:0;width:268px;flex-shrink:0;height:100vh;overflow-y:auto;
+          padding:26px 18px;border-right:1px solid var(--bordure);background:var(--surface)}
+.sommaire .titre-doc{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+                     color:var(--marine-clair);margin-bottom:2px}
+.sommaire .sous{font-size:11.5px;color:var(--muet);margin-bottom:20px}
+.sommaire a{display:block;padding:6px 10px;border-radius:7px;font-size:13.2px;color:var(--encre-2)}
+.sommaire a:hover{background:var(--surface-2);color:var(--encre);text-decoration:none}
+.sommaire a .num{display:inline-block;width:20px;color:var(--muet);font-variant-numeric:tabular-nums}
+main{flex:1;min-width:0;padding:0 34px 80px}
+
+.bandeau{background:linear-gradient(135deg,var(--marine) 0%,#10467f 58%,var(--accent) 130%);
+         color:#fff;margin:0 -34px 30px;padding:44px 34px 38px}
+.bandeau h1{font-size:29px;color:#fff}
+.bandeau .accroche{font-size:15.5px;opacity:.92;margin:10px 0 0;max-width:70ch}
+.bandeau .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.bandeau .meta span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);
+                    border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:600}
+
+section{margin-bottom:44px;scroll-margin-top:20px}
+section > h2{font-size:22px;padding-bottom:10px;border-bottom:2px solid var(--grille);margin-bottom:18px}
+section > h2 .num{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:10px}
+h3{font-size:16.5px;margin:26px 0 10px}
+h4{font-size:14.5px;margin:18px 0 8px;color:var(--encre-2)}
+
+.carte{background:var(--surface);border:1px solid var(--bordure);border-radius:var(--rayon);
+       box-shadow:var(--ombre);padding:18px 20px;margin-bottom:16px}
+.grille{display:grid;gap:14px}
+.k2{grid-template-columns:repeat(auto-fit,minmax(310px,1fr))}
+.k3{grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
+.k4{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+
+.tuile{background:var(--surface);border:1px solid var(--bordure);border-left:3px solid var(--accent);
+       border-radius:var(--rayon);box-shadow:var(--ombre);padding:14px 16px}
+.tuile .val{font-size:25px;font-weight:680;letter-spacing:-.02em}
+.tuile .lib{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muet)}
+.tuile .note{font-size:12px;color:var(--encre-2);margin-top:3px}
+.tuile.front{border-left-color:var(--front)} .tuile.back{border-left-color:var(--back)}
+.tuile.ia{border-left-color:var(--ia)}      .tuile.data{border-left-color:var(--data)}
+
+/* ---------- Tableaux ---------- */
+.tab-conteneur{overflow-x:auto;border:1px solid var(--bordure);border-radius:var(--rayon);margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:13.2px}
+th{background:var(--surface-2);text-align:left;padding:10px 12px;font-weight:660;font-size:12px;
+   color:var(--encre-2);border-bottom:1px solid var(--grille);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--grille);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:nth-child(even){background:var(--surface-2)}
+td code{white-space:nowrap}
+
+/* ---------- Etiquettes ---------- */
+.eti{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:660;
+     border:1px solid var(--bordure);background:var(--surface-2);color:var(--encre-2);white-space:nowrap}
+.eti.get{background:#e6f2fd;color:#12447c;border-color:#b6d5f5}
+.eti.post{background:#e6f7e6;color:#0a6b0a;border-color:#bfe6bf}
+.eti.put{background:#fef6e0;color:#8a5d00;border-color:#f6e0a8}
+.eti.del{background:#fbe6e6;color:#9c2020;border-color:#f2c4c4}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme=light])) .eti.get{background:#12283f;color:#9ec5f4;border-color:#1c4570}
+ :root:where(:not([data-theme=light])) .eti.post{background:#123212;color:#8fd98f;border-color:#1d4d1d}
+ :root:where(:not([data-theme=light])) .eti.put{background:#332a10;color:#f0cf7a;border-color:#5a4818}
+ :root:where(:not([data-theme=light])) .eti.del{background:#331616;color:#f0a0a0;border-color:#5c2626}}
+
+/* ---------- Encadres ---------- */
+.note{border:1px solid;border-left-width:3px;border-radius:9px;padding:13px 16px;margin-bottom:16px;font-size:14px}
+.note .chapo{font-weight:660;display:block;margin-bottom:3px}
+.note.info{background:color-mix(in srgb,var(--accent) 8%,transparent);border-color:var(--accent)}
+.note.cle{background:color-mix(in srgb,var(--bon) 10%,transparent);border-color:var(--bon)}
+.note.garde{background:color-mix(in srgb,var(--attention) 12%,transparent);border-color:var(--attention)}
+.note.limite{background:color-mix(in srgb,var(--critique) 8%,transparent);border-color:var(--critique)}
+
+/* ---------- Schemas ---------- */
+.schema{background:var(--surface);border:1px solid var(--bordure);border-radius:var(--rayon);
+        padding:22px 18px;margin-bottom:16px;overflow-x:auto}
+.legende-schema{font-size:12.3px;color:var(--muet);text-align:center;margin-top:12px}
+
+.pile{display:flex;flex-direction:column;align-items:center;gap:0}
+.etage{width:100%;max-width:660px;border-radius:var(--rayon);padding:13px 18px;
+       border:1px solid var(--bordure);background:var(--surface-2);text-align:center}
+.etage .nom{font-weight:660;font-size:14.5px}
+.etage .det{font-size:12.3px;color:var(--encre-2);margin-top:3px}
+.etage.f{border-color:var(--front);background:color-mix(in srgb,var(--front) 9%,transparent)}
+.etage.b{border-color:var(--back);background:color-mix(in srgb,var(--back) 9%,transparent)}
+.etage.i{border-color:var(--ia);background:color-mix(in srgb,var(--ia) 9%,transparent)}
+.etage.d{border-color:var(--data);background:color-mix(in srgb,var(--data) 9%,transparent)}
+.fleche{width:2px;height:24px;background:var(--grille);position:relative}
+.fleche::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+               border-left:5px solid transparent;border-right:5px solid transparent;
+               border-top:7px solid var(--grille)}
+.fleche .lib{position:absolute;left:14px;top:50%;transform:translateY(-50%);white-space:nowrap;
+             font-size:11.5px;color:var(--muet);font-family:var(--mono)}
+
+.flux{display:flex;align-items:stretch;gap:0;flex-wrap:nowrap;min-width:min-content}
+.flux .boite{flex:1;min-width:132px;border:1px solid var(--bordure);border-radius:9px;
+             padding:11px 12px;background:var(--surface-2);font-size:12.6px}
+.flux .boite .t{font-weight:660;font-size:13px;margin-bottom:3px}
+.flux .fh{flex:0 0 30px;display:flex;align-items:center;justify-content:center;color:var(--muet);font-size:17px}
+
+/* ---------- Arborescence ---------- */
+.arbo{font-family:var(--mono);font-size:12.6px;line-height:1.75;background:var(--surface-2);
+      border:1px solid var(--bordure);border-radius:var(--rayon);padding:16px 18px;overflow-x:auto;margin-bottom:16px}
+.arbo .dossier{color:var(--accent);font-weight:600}
+.arbo .cmt{color:var(--muet)}
+
+.liste-def{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13.5px;margin-bottom:14px}
+.liste-def dt{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--encre)}
+.liste-def dd{margin:0;color:var(--encre-2)}
+
+.pied{border-top:1px solid var(--bordure);padding-top:18px;margin-top:40px;
+      font-size:12.5px;color:var(--muet);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media (max-width:980px){
+  .enveloppe{flex-direction:column}
+  .sommaire{position:static;width:100%;height:auto;border-right:0;border-bottom:1px solid var(--bordure)}
+  .sommaire a{display:inline-block}
+  main{padding:0 18px 60px}
+  .bandeau{margin:0 -18px 24px;padding:32px 18px}
+}
+@media print{
+  .sommaire{display:none}
+  body{background:#fff;font-size:11pt}
+  .bandeau{background:#0d366b !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  section{break-inside:avoid-page}
+  .carte,.schema,.tab-conteneur{break-inside:avoid}
+  main{padding:0}
+}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+
+<nav class="sommaire">
+  <div class="titre-doc">Architecture</div>
+  <div class="sous">Actions sociales · Marsa Maroc</div>
+  <a href="#vue"><span class="num">1</span>Vue d'ensemble</a>
+  <a href="#archi"><span class="num">2</span>Architecture générale</a>
+  <a href="#donnees"><span class="num">3</span>Modèle de données</a>
+  <a href="#backend"><span class="num">4</span>Back-end Django</a>
+  <a href="#api"><span class="num">5</span>API REST</a>
+  <a href="#securite"><span class="num">6</span>Authentification</a>
+  <a href="#frontend"><span class="num">7</span>Front-end React</a>
+  <a href="#ia"><span class="num">8</span>Partie IA</a>
+  <a href="#regles"><span class="num">9</span>Règles métier</a>
+  <a href="#tests"><span class="num">10</span>Tests &amp; qualité</a>
+  <a href="#demarrage"><span class="num">11</span>Démarrage</a>
+</nav>
+
+<main>
+
+<header class="bandeau">
+  <h1>Plateforme de Gestion des Actions Sociales</h1>
+  <p class="accroche">
+    Application web permettant à l'administrateur RH de Marsa Maroc de gérer les prestations
+    sociales du personnel, avec un objectif central : <strong>garantir l'équité de distribution</strong>
+    en identifiant qui a déjà bénéficié d'un service et surtout qui ne l'a jamais reçu.
+  </p>
+  <div class="meta">
+    <span>Django 5.2 + DRF</span><span>React 19 + Vite</span><span>SQLite</span>
+    <span>JWT</span><span>scikit-learn</span><span>LLM optionnel</span>
+  </div>
+</header>
+
+<!-- =========================== 1 =========================== -->
+<section id="vue">
+  <h2><span class="num">1</span>Vue d'ensemble</h2>
+
+  <p>
+    La plateforme répond à un besoin précis de la DRH : les aides sociales (aide scolaire, mariage,
+    Hajj, naissance, décès…) sont attribuées au fil de l'eau, sans vision consolidée. Deux problèmes
+    en découlent — des employés reçoivent deux fois le même service, et d'autres, plus discrets,
+    ne reçoivent jamais rien. La table <code>transaction</code> est le cœur du système : elle relie
+    un employé à une activité, et c'est elle qui permet de répondre aux deux questions.
+  </p>
+
+  <div class="grille k4" style="margin-bottom:18px">
+    <div class="tuile data"><div class="lib">Tables</div><div class="val">3</div>
+      <div class="note">personnel · activitee · transaction</div></div>
+    <div class="tuile back"><div class="lib">Back-end</div><div class="val">~3 400</div>
+      <div class="note">lignes de Python</div></div>
+    <div class="tuile front"><div class="lib">Front-end</div><div class="val">~3 600</div>
+      <div class="note">lignes de JSX / CSS</div></div>
+    <div class="tuile ia"><div class="lib">Tests</div><div class="val">92</div>
+      <div class="note">automatisés, hors ligne</div></div>
+  </div>
+
+  <h3>Pile technique</h3>
+  <div class="tab-conteneur">
+    <table>
+      <thead><tr><th>Couche</th><th>Technologie</th><th>Rôle</th></tr></thead>
+      <tbody>
+        <tr><td><span class="eti" style="border-color:var(--front);color:var(--front)">Front</span></td>
+            <td>React 19, Vite, React Router 7, Recharts, Axios</td>
+            <td>Interface d'administration : 11 écrans, graphiques, exports</td></tr>
+        <tr><td><span class="eti" style="border-color:var(--back);color:var(--back)">Back</span></td>
+            <td>Django 5.2, Django REST Framework, django-filter</td>
+            <td>API REST, règles métier, agrégations, sécurité</td></tr>
+        <tr><td><span class="eti" style="border-color:var(--data);color:var(--data)">Données</span></td>
+            <td>SQLite</td>
+            <td>Base de données fichier, aucune installation serveur</td></tr>
+        <tr><td><span class="eti" style="border-color:var(--ia);color:var(--ia)">IA</span></td>
+            <td>scikit-learn (K-Means), moteur de règles, LLM Groq (optionnel)</td>
+            <td>Priorisation, segmentation, assistant en langage naturel</td></tr>
+        <tr><td><span class="eti">Divers</span></td>
+            <td>SimpleJWT, openpyxl, reportlab, django-cors-headers</td>
+            <td>Authentification, exports Excel et PDF</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note info">
+    <span class="chapo">Pourquoi SQLite</span>
+    Le volume est faible (quelques milliers de transactions pour un effectif de quelques centaines),
+    et une base fichier rend le projet <em>portable</em> : le jury clone, lance deux commandes, et
+    l'application fonctionne. Le passage à PostgreSQL ne demanderait qu'un changement dans
+    <code>DATABASES</code>, l'ORM Django isolant totalement le code du moteur.
+  </div>
+</section>
+
+<!-- =========================== 2 =========================== -->
+<section id="archi">
+  <h2><span class="num">2</span>Architecture générale</h2>
+
+  <p>
+    L'application suit une architecture <strong>client / serveur découplée</strong> : le front React
+    est une application autonome qui ne communique avec Django que par des appels HTTP JSON. Cette
+    séparation permet de faire évoluer l'interface sans toucher au métier, et rendrait possible
+    l'ajout d'un client mobile sans réécrire une ligne de back-end.
+  </p>
+
+  <div class="schema">
+    <div class="pile">
+      <div class="etage f">
+        <div class="nom">Navigateur — Application React</div>
+        <div class="det">Composants, routage, état local · <code>localhost:5173</code></div>
+      </div>
+      <div class="fleche"><span class="lib">HTTP + JWT</span></div>
+      <div class="etage f" style="max-width:520px">
+        <div class="nom">Proxy Vite <code>/api → :8000</code></div>
+        <div class="det">Même origine : supprime le CORS et les conflits IPv4 / IPv6</div>
+      </div>
+      <div class="fleche"><span class="lib">JSON</span></div>
+      <div class="etage b">
+        <div class="nom">Django REST Framework</div>
+        <div class="det">Vues &amp; ViewSets · sérialisation · filtres · permissions</div>
+      </div>
+      <div class="fleche"></div>
+      <div class="etage b" style="max-width:560px">
+        <div class="nom">Couche métier</div>
+        <div class="det">Règles anti-doublon · agrégations · budget · exports · IA</div>
+      </div>
+      <div class="fleche"><span class="lib">ORM</span></div>
+      <div class="etage d" style="max-width:420px">
+        <div class="nom">SQLite — 3 tables</div>
+        <div class="det">personnel · activitee · transaction</div>
+      </div>
+    </div>
+    <div class="legende-schema">
+      Flux principal. Le renfort LLM (§ 8) est un embranchement optionnel depuis la couche métier.
+    </div>
+  </div>
+
+  <h3>Cycle d'une requête</h3>
+  <div class="schema">
+    <div class="flux">
+      <div class="boite"><div class="t">1 · Interface</div>L'admin filtre la liste du personnel</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">2 · Axios</div>Ajoute le jeton JWT, appelle <code>/api/personnel/</code></div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">3 · DRF</div>Authentifie, applique filtres, tri, pagination</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">4 · ORM</div>Une requête SQL avec annotations</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">5 · Serializer</div>Convertit en JSON, ajoute les champs calculés</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">6 · React</div>Affiche le tableau trié et paginé</div>
+    </div>
+  </div>
+
+  <div class="note cle">
+    <span class="chapo">Choix d'architecture : le proxy Vite</span>
+    Le front appelle <code>/api</code> en <em>relatif</em>, et Vite relaie vers Django. Conséquence :
+    le navigateur ne fait jamais de requête cross-origin. Cela supprime d'un coup les problèmes de
+    CORS <em>et</em> la résolution ambiguë de <code>localhost</code> sous Windows (qui pointe d'abord
+    vers l'IPv6 <code>::1</code>, où <code>runserver</code> n'écoute pas). En production, servir le
+    build React derrière le même serveur web reproduit exactement cette configuration.
+  </div>
+</section>
+
+<!-- =========================== 3 =========================== -->
+<section id="donnees">
+  <h2><span class="num">3</span>Modèle de données</h2>
+
+  <p>
+    Trois tables, reliées par une association plusieurs-à-plusieurs porteuse d'attributs :
+    <code>transaction</code> n'est pas une simple table de jonction, elle porte le montant versé,
+    la date et l'exercice.
+  </p>
+
+  <div class="schema">
+    <div class="flux" style="align-items:center">
+      <div class="boite" style="border-color:var(--data);flex:1">
+        <div class="t">personnel</div>
+        <code>matricule</code> PK<br>nom, prenom, sexe<br>departement<br>date_recrutement<br>nb_enfants
+      </div>
+      <div class="fh">1 ──&lt;</div>
+      <div class="boite" style="border-color:var(--accent);flex:1.15">
+        <div class="t">transaction</div>
+        <code>id_transaction</code> PK<br><code>matricule</code> FK<br><code>id_activitee</code> FK<br>
+        montantTR, duree<br>date_transaction, annee
+      </div>
+      <div class="fh">&gt;── 1</div>
+      <div class="boite" style="border-color:var(--data);flex:1">
+        <div class="t">activitee</div>
+        <code>id_activitee</code> PK<br>service<br>montantSC<br>budget_alloue<br>unique_par_employe
+      </div>
+    </div>
+    <div class="legende-schema">
+      Un employé a plusieurs transactions ; une activité concerne plusieurs transactions.
+    </div>
+  </div>
+
+  <h3>Champs ajoutés à l'énoncé</h3>
+  <p>Trois champs ne figurent pas dans le sujet initial. Ils sont à justifier en soutenance.</p>
+  <div class="tab-conteneur">
+    <table>
+      <thead><tr><th>Champ</th><th>Table</th><th>Justification</th></tr></thead>
+      <tbody>
+        <tr><td><code>budget_alloue</code></td><td>activitee</td>
+            <td>Sans enveloppe par service, la gestion budgétaire et ses alertes sont impossibles.</td></tr>
+        <tr><td><code>unique_par_employe</code></td><td>activitee</td>
+            <td>Le Hajj ou le mariage ne s'accordent qu'une fois dans une carrière ; une aide scolaire
+                est renouvelable chaque année. Toute la règle anti-doublon repose sur cette distinction.</td></tr>
+        <tr><td><code>sexe</code></td><td>personnel</td>
+            <td>Permet de filtrer et surtout de <strong>mesurer l'équité hommes / femmes</strong>.
+                Facultatif : les dossiers incomplets restent « non renseigné ».</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Champs calculés</h3>
+  <p>Certaines informations ne sont pas stockées mais dérivées, pour éviter toute désynchronisation.</p>
+  <dl class="liste-def">
+    <dt>anciennete</dt><dd>Années révolues depuis <code>date_recrutement</code>, calculée à la volée.</dd>
+    <dt>annee</dt><dd>Déduite de <code>date_transaction</code>. Une incohérence entre les deux est <em>refusée</em> : les statistiques annuelles restent fiables.</dd>
+    <dt>total_percu, nb_transactions</dt><dd>Agrégations SQL (<code>Sum</code>, <code>Count</code>) annotées sur le queryset, jamais recalculées en Python.</dd>
+    <dt>sexe_libelle</dt><dd>Libellé lisible, avec repli sur « Non renseigne ».</dd>
+  </dl>
+
+  <h3>Migrations</h3>
+  <div class="tab-conteneur">
+    <table>
+      <thead><tr><th>Migration</th><th>Contenu</th></tr></thead>
+      <tbody>
+        <tr><td><code>0001_initial</code></td><td>Création des trois tables et de leurs index.</td></tr>
+        <tr><td><code>0002_personnel_sexe</code></td><td>Ajout du champ <code>sexe</code>.</td></tr>
+        <tr><td><code>0003_remplir_sexe</code></td>
+            <td>Migration <em>de données</em> : renseigne le sexe des dossiers existants en le déduisant
+                du prénom. Un prénom non reconnu reste vide — on ne fabrique pas de donnée.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- =========================== 4 =========================== -->
+<section id="backend">
+  <h2><span class="num">4</span>Back-end Django</h2>
+
+  <p>
+    Le back-end est organisé par <strong>responsabilité</strong>, pas par entité : chaque fichier
+    répond à une question unique. Un développeur qui cherche « où est la règle anti-doublon ? »
+    trouve la réponse dans <code>serializers.py</code>, et nulle part ailleurs.
+  </p>
+
+  <div class="arbo">
+backend/
+├── <span class="dossier">config/</span>
+│   ├── settings.py        <span class="cmt">réglages, JWT, CORS, chargement du .env, seuils métier</span>
+│   └── urls.py            <span class="cmt">racine : /admin/, /api/</span>
+├── <span class="dossier">core/</span>
+│   ├── models.py          <span class="cmt">110 l. — les 3 tables et leurs champs calculés</span>
+│   ├── serializers.py     <span class="cmt">155 l. — JSON ⇄ objets + RÈGLE ANTI-DOUBLON</span>
+│   ├── views.py           <span class="cmt">725 l. — ViewSets CRUD, équité, budget, statistiques</span>
+│   ├── filters.py         <span class="cmt"> 41 l. — filtres de recherche déclaratifs</span>
+│   ├── pagination.py      <span class="cmt">  6 l. — pagination configurable</span>
+│   ├── ai.py              <span class="cmt">913 l. — score d'équité, K-Means, assistant NL</span>
+│   ├── llm.py             <span class="cmt">188 l. — renfort LLM optionnel + garde-fous</span>
+│   ├── exports.py         <span class="cmt">204 l. — génération Excel (openpyxl) et PDF (reportlab)</span>
+│   ├── admin.py           <span class="cmt">interface d'administration Django</span>
+│   ├── tests.py           <span class="cmt">637 l. — 92 tests</span>
+│   └── management/commands/seed.py   <span class="cmt">jeu de démonstration</span>
+├── .env.example           <span class="cmt">modèle de configuration (.env est ignoré par git)</span>
+└── db.sqlite3
+  </div>
+
+  <h3>Rôle de chaque couche</h3>
+  <div class="grille k2">
+    <div class="carte">
+      <h4>models.py — la vérité</h4>
+      <p style="margin:0">
+        Définit les tables, les contraintes et les index. Deux index composites accélèrent les requêtes
+        les plus fréquentes : <code>(matricule, id_activitee)</code> pour la détection de doublon, et
+        <code>(id_activitee, annee)</code> pour les statistiques annuelles.
+      </p>
+    </div>
+    <div class="carte">
+      <h4>serializers.py — le contrôle</h4>
+      <p style="margin:0">
+        Traduit JSON ⇄ objets Python, expose les champs calculés, et surtout <strong>valide les règles
+        métier</strong>. La méthode <code>validate()</code> refuse un doublon ou une année incohérente.
+        Placée ici, la règle s'applique à toute écriture, quelle qu'en soit l'origine.
+      </p>
+    </div>
+    <div class="carte">
+      <h4>views.py — l'orchestration</h4>
+      <p style="margin:0">
+        Trois <code>ModelViewSet</code> pour le CRUD, enrichis d'actions métier
+        (<code>@action</code>) : bénéficiaires, non-bénéficiaires, budget, vérification de doublon,
+        attestations. Plus trois vues d'agrégation pour les statistiques.
+      </p>
+    </div>
+    <div class="carte">
+      <h4>filters.py — la recherche</h4>
+      <p style="margin:0">
+        Filtres déclaratifs <code>django-filter</code> : département, sexe, année, plages de montants
+        et de dates, et deux filtres métier (<code>a_beneficie_de</code>,
+        <code>jamais_beneficie_de</code>). Aucun filtrage en Python : tout se passe en SQL.
+      </p>
+    </div>
+  </div>
+
+  <div class="note cle">
+    <span class="chapo">Principe directeur : la règle métier vit au plus près des données</span>
+    La validation anti-doublon est dans le <em>serializer</em>, pas dans le composant React. Le
+    front affiche une alerte pour le confort de l'utilisateur, mais s'il était contourné —
+    appel direct à l'API, admin Django, script — le serveur refuserait quand même. L'interface
+    prévient ; le serveur garantit.
+  </div>
+
+  <h3>Performance</h3>
+  <ul>
+    <li><code>select_related</code> et <code>prefetch_related</code> systématiques : la liste des
+        transactions charge employé et activité en une seule requête, pas 1 + 2N.</li>
+    <li>Les totaux sont calculés par <code>annotate(Sum(...))</code> côté base, jamais par des
+        boucles Python.</li>
+    <li>Pagination serveur par défaut (25 lignes), ajustable par <code>?page_size=</code>.</li>
+    <li>Le tri porte sur <strong>toute la table</strong>, pas sur la page affichée — un détail qui
+        distingue un vrai tri d'un tri cosmétique.</li>
+  </ul>
+</section>
+
+<!-- =========================== 5 =========================== -->
+<section id="api">
+  <h2><span class="num">5</span>API REST</h2>
+
+  <p>
+    Toutes les routes sont préfixées par <code>/api/</code> et exigent l'en-tête
+    <code>Authorization: Bearer &lt;jeton&gt;</code>. Sans jeton valide, l'API répond
+    <code>401</code> — aucune donnée n'est accessible.
+  </p>
+
+  <h3>Authentification</h3>
+  <div class="tab-conteneur"><table>
+    <thead><tr><th>Méthode</th><th>Route</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><span class="eti post">POST</span></td><td><code>/auth/login/</code></td><td>Jetons d'accès et de rafraîchissement + profil</td></tr>
+      <tr><td><span class="eti post">POST</span></td><td><code>/auth/refresh/</code></td><td>Renouvelle le jeton d'accès</td></tr>
+      <tr><td><span class="eti get">GET</span></td><td><code>/auth/me/</code></td><td>Profil de l'administrateur connecté</td></tr>
+      <tr><td><span class="eti post">POST</span></td><td><code>/auth/logout/</code></td><td>Ferme la session serveur</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>CRUD</h3>
+  <div class="tab-conteneur"><table>
+    <thead><tr><th>Méthodes</th><th>Route</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><span class="eti get">GET</span> <span class="eti post">POST</span></td>
+          <td><code>/personnel/</code> · <code>/activites/</code> · <code>/transactions/</code></td>
+          <td>Lister (filtres, recherche, tri, pagination) et créer</td></tr>
+      <tr><td><span class="eti get">GET</span> <span class="eti put">PUT</span> <span class="eti del">DEL</span></td>
+          <td><code>/personnel/{matricule}/</code> · <code>/activites/{id}/</code> · <code>/transactions/{id}/</code></td>
+          <td>Consulter, modifier, supprimer</td></tr>
+      <tr><td><span class="eti get">GET</span></td><td><code>/personnel/{matricule}/transactions/</code></td>
+          <td>Historique complet d'un employé</td></tr>
+      <tr><td><span class="eti get">GET</span></td><td><code>/personnel/departements/</code> · <code>/transactions/annees/</code></td>
+          <td>Valeurs distinctes, pour alimenter les listes déroulantes</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Équité — le cœur du sujet</h3>
+  <div class="tab-conteneur"><table>
+    <thead><tr><th>Méthode</th><th>Route</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><span class="eti get">GET</span></td><td><code>/activites/{id}/beneficiaires/</code></td>
+          <td>Employés ayant <strong>déjà</strong> reçu ce service</td></tr>
+      <tr><td><span class="eti get">GET</span></td><td><code>/activites/{id}/non-beneficiaires/</code></td>
+          <td><strong>Les oubliés</strong> — filtrable par année et département</td></tr>
+      <tr><td><span class="eti get">GET</span></td><td><code>/personnel/sans-aucune-aide/</code></td>
+          <td>Employés n'ayant jamais rien reçu, tous services confondus</td></tr>
+      <tr><td><span class="eti get">GET</span></td><td><code>/transactions/verifier-doublon/</code></td>
+          <td>Contrôle préalable à la saisie</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Statistiques, budget, IA et exports</h3>
+  <div class="tab-conteneur"><table>
+    <thead><tr><th>Route</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>/stats/</code></td><td>Tableau de bord : effectif, couverture, par service, par année, par département, par sexe</td></tr>
+      <tr><td><code>/stats/couverture/</code></td><td>Taux de couverture service par service</td></tr>
+      <tr><td><code>/activites/budget/</code></td><td>Consommé / restant par enveloppe, avec seuil d'alerte paramétrable</td></tr>
+      <tr><td><code>/ia/recommandations/</code></td><td>Classement des employés par score d'équité</td></tr>
+      <tr><td><code>/ia/clusters/</code></td><td>Segmentation K-Means du personnel</td></tr>
+      <tr><td><code>/ia/chatbot/</code></td><td><span class="eti post">POST</span> question + contexte · <span class="eti get">GET</span> état du moteur</td></tr>
+      <tr><td><code>…/export/?format=excel|pdf</code></td><td>Export de toute liste, <strong>filtres actifs compris</strong></td></tr>
+      <tr><td><code>/transactions/{id}/attestation/</code></td><td>Attestation individuelle en PDF</td></tr>
+      <tr><td><code>/stats/rapport-annuel/?annee=</code></td><td>État récapitulatif annuel</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note info">
+    <span class="chapo">Un piège rencontré</span>
+    DRF utilise le paramètre <code>?format=</code> pour sa propre négociation de contenu : nos
+    exports renvoyaient donc <code>404</code>. Le réglage <code>URL_FORMAT_OVERRIDE = None</code>
+    rend ce paramètre à l'application.
+  </div>
+</section>
+
+<!-- =========================== 6 =========================== -->
+<section id="securite">
+  <h2><span class="num">6</span>Authentification et sécurité</h2>
+
+  <p>
+    L'espace est réservé à l'administrateur RH. L'authentification repose sur des jetons
+    <strong>JWT</strong> : le serveur ne conserve aucun état de session, ce qui simplifie la montée
+    en charge et découple totalement le front du back.
+  </p>
+
+  <div class="schema">
+    <div class="flux">
+      <div class="boite"><div class="t">1 · Connexion</div>identifiant + mot de passe → <code>/auth/login/</code></div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">2 · Jetons</div>accès (8 h) + rafraîchissement (7 j), stockés côté client</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">3 · Requêtes</div>un intercepteur Axios ajoute l'en-tête <code>Bearer</code></div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">4 · Expiration</div>sur <code>401</code>, rafraîchissement automatique et rejeu</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">5 · Échec</div>redirection vers l'écran de connexion</div>
+    </div>
+  </div>
+
+  <h4>Mesures en place</h4>
+  <ul>
+    <li><code>IsAuthenticated</code> par défaut sur <em>toutes</em> les vues : une route nouvelle est protégée d'office.</li>
+    <li>Mots de passe hachés par Django (PBKDF2), jamais stockés en clair.</li>
+    <li>Secrets (clé d'API) dans un fichier <code>.env</code> exclu du dépôt ; un <code>.env.example</code> documente les variables attendues.</li>
+    <li>CORS restreint aux origines de développement — et neutralisé en pratique par le proxy Vite.</li>
+    <li>L'ORM paramètre toutes les requêtes : pas d'injection SQL possible.</li>
+    <li>React échappe le contenu par défaut : pas d'injection XSS via les données affichées.</li>
+  </ul>
+
+  <div class="note limite">
+    <span class="chapo">Limites assumées — à dire au jury plutôt qu'à cacher</span>
+    La configuration est celle d'un environnement de développement : <code>DEBUG = True</code>,
+    <code>SECRET_KEY</code> en clair, <code>ALLOWED_HOSTS = ["*"]</code>, jetons conservés dans le
+    <code>localStorage</code>. Une mise en production exigerait : <code>DEBUG = False</code>, une clé
+    tirée de l'environnement, HTTPS, des cookies <code>HttpOnly</code> plutôt que le
+    <code>localStorage</code>, et une liste blanche d'hôtes.
+  </div>
+</section>
+
+<!-- =========================== 7 =========================== -->
+<section id="frontend">
+  <h2><span class="num">7</span>Front-end React</h2>
+
+  <p>
+    Application à page unique (SPA) : le routage est géré côté navigateur, seules les données
+    transitent par le réseau. L'organisation sépare les <em>pages</em> (un écran = un fichier) des
+    <em>composants</em> réutilisables.
+  </p>
+
+  <div class="arbo">
+frontend/src/
+├── main.jsx / App.jsx      <span class="cmt">point d'entrée, routes, protection des accès</span>
+├── api/client.js           <span class="cmt">Axios : jeton, rafraîchissement auto, téléchargements</span>
+├── context/AuthContext.jsx <span class="cmt">état d'authentification partagé (React Context)</span>
+├── <span class="dossier">components/</span>
+│   ├── Layout.jsx          <span class="cmt">menu latéral, en-tête, bulle d'assistant</span>
+│   ├── ui.jsx              <span class="cmt">tableau triable, modale, tuile, pagination, formatage</span>
+│   ├── graphes.jsx         <span class="cmt">barres, barres horizontales, courbes (Recharts)</span>
+│   ├── Discussion.jsx      <span class="cmt">chat réutilisable (page ET bulle)</span>
+│   └── BulleAssistant.jsx  <span class="cmt">assistant flottant, présent sur tous les écrans</span>
+└── <span class="dossier">pages/</span>  <span class="cmt">11 écrans</span>
+    ├── Connexion · TableauDeBord · Statistiques · Budget
+    ├── Equite · Recommandations · Clusters · Assistant
+    └── Personnel · Activites · Transactions
+  </div>
+
+  <h3>Les onze écrans</h3>
+  <div class="tab-conteneur"><table>
+    <thead><tr><th>Groupe</th><th>Écran</th><th>Contenu</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3"><strong>Pilotage</strong></td><td>Tableau de bord</td>
+          <td>Quatre indicateurs, alertes, deux graphiques, couverture par service et département</td></tr>
+      <tr><td>Statistiques</td><td>Montants par service et par année, bénéficiaires, équité hommes / femmes, rapport annuel</td></tr>
+      <tr><td>Budget</td><td>Consommé / restant par enveloppe, seuil d'alerte réglable, statuts</td></tr>
+      <tr><td rowspan="4"><strong>Équité</strong></td><td>Servis / non servis</td>
+          <td>Le cœur du sujet : deux onglets, filtres, exports des oubliés</td></tr>
+      <tr><td>Priorisation IA</td><td>Classement par score d'équité, avec justification par ligne</td></tr>
+      <tr><td>Profils K-Means</td><td>Groupes d'employés, étiquetés automatiquement</td></tr>
+      <tr><td>Assistant</td><td>Chat en langage naturel, plein écran</td></tr>
+      <tr><td rowspan="3"><strong>Données</strong></td><td>Personnel</td>
+          <td>CRUD, recherche, filtres, services reçus par employé</td></tr>
+      <tr><td>Activités</td><td>CRUD du catalogue, montants et budgets</td></tr>
+      <tr><td>Transactions</td><td>CRUD, alerte doublon en direct, attestations PDF</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Choix de conception</h3>
+  <div class="grille k2">
+    <div class="carte">
+      <h4>Pas de bibliothèque d'état global</h4>
+      <p style="margin:0">Redux serait surdimensionné : chaque écran possède son propre état, et la
+      seule donnée réellement partagée — l'utilisateur connecté — tient dans un Context React.</p>
+    </div>
+    <div class="carte">
+      <h4>Un composant tableau unique</h4>
+      <p style="margin:0">Tri, colonnes personnalisables, rendu sur mesure par cellule. Utilisé par
+      les dix écrans qui affichent des listes : un correctif profite à tous.</p>
+    </div>
+    <div class="carte">
+      <h4>Tri et pagination côté serveur</h4>
+      <p style="margin:0">Le tri est envoyé en paramètre <code>?ordering=</code>. Trier sur 60 lignes
+      en JavaScript fonctionnerait ; sur 5 000, non. Le comportement est correct dès le départ.</p>
+    </div>
+    <div class="carte">
+      <h4>Graphiques accessibles</h4>
+      <p style="margin:0">Palette validée pour les daltonismes (deutan, protan, tritan). Chaque série
+      porte une légende et des libellés directs : l'information ne repose <em>jamais</em> sur la
+      couleur seule. Idem pour les statuts budgétaires, qui portent un texte.</p>
+    </div>
+  </div>
+
+  <div class="note info">
+    <span class="chapo">La bulle d'assistant</span>
+    L'assistant est accessible depuis n'importe quel écran via une bulle flottante. Le panneau est
+    <em>masqué</em> et non démonté à la fermeture : la conversation survit à une consultation de
+    tableau. La logique de chat est factorisée dans <code>Discussion.jsx</code>, utilisée à la fois
+    par la bulle et par la page plein écran.
+  </div>
+</section>
+
+<!-- =========================== 8 =========================== -->
+<section id="ia">
+  <h2><span class="num">8</span>Partie IA</h2>
+
+  <p>Trois briques, toutes centrées sur l'objectif d'équité du projet.</p>
+
+  <h3>8.1 — Score de priorisation <span class="eti">le plus aligné avec le sujet</span></h3>
+  <p>
+    Pour un service donné, chaque employé reçoit une note sur 100. Plus elle est élevée, plus
+    l'employé mérite d'être servi en priorité.
+  </p>
+  <div class="tab-conteneur"><table>
+    <thead><tr><th>Critère</th><th>Poids (service standard)</th><th>Intention</th></tr></thead>
+    <tbody>
+      <tr><td>N'a jamais bénéficié de ce service</td><td><strong>40 %</strong></td><td>Le cœur du sujet</td></tr>
+      <tr><td>A reçu peu d'aides, toutes catégories</td><td>20 %</td><td>Repérer les discrets</td></tr>
+      <tr><td>A perçu un faible montant cumulé</td><td>12 %</td><td>Équité financière</td></tr>
+      <tr><td>Ancienneté</td><td>16 %</td><td>Reconnaissance du service rendu</td></tr>
+      <tr><td>Nombre d'enfants</td><td>12 %</td><td>Charge familiale</td></tr>
+    </tbody>
+  </table></div>
+  <p>
+    La pondération <strong>s'adapte à la nature du service</strong> : une aide scolaire ou une prime
+    de naissance pèsent davantage le nombre d'enfants (30 %) ; un pèlerinage ou une aide au mariage
+    pèsent l'ancienneté (25 %) et le fait de n'avoir jamais été servi (45 %). Les variables continues
+    sont normalisées min-max sur l'effectif, afin qu'aucune ne domine par son échelle.
+  </p>
+  <div class="note cle">
+    <span class="chapo">Chaque score est justifié</span>
+    Le classement affiche pour chaque ligne <em>pourquoi</em> l'employé est proposé
+    (« N'a jamais bénéficié de … », « Aucune aide reçue à ce jour », « Ancienneté élevée (23 ans) »).
+    Une recommandation opaque serait indéfendable devant un jury — et surtout devant un employé qui
+    demanderait pourquoi il n'a pas été retenu.
+  </div>
+
+  <h3>8.2 — Assistant en langage naturel</h3>
+  <p>
+    Un moteur à règles, déterministe et fonctionnant hors ligne, traite la question en quatre temps.
+  </p>
+  <div class="schema">
+    <div class="flux">
+      <div class="boite"><div class="t">1 · Normalisation</div>minuscules, accents retirés, abréviations développées (<code>bjr</code>, <code>cb</code>, <code>jms</code>)</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">2 · Entités</div>service, année, département, sexe, employé — tolérance aux fautes et aux mots collés</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">3 · Intention</div>dix intentions reconnues, plus politesse, employé et aide</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">4 · Exécution</div>requête ORM, réponse structurée : texte + tableau</div>
+    </div>
+  </div>
+  <p>
+    Les libellés de services sont lus <strong>depuis la base</strong> : créer une nouvelle activité la
+    rend immédiatement reconnaissable, rien n'est codé en dur. L'assistant garde le fil de la
+    conversation — après une question sur un service, « et en 2023 ? » ou « les prioritaires ? »
+    suffisent. Le contexte est renvoyé au client puis reposté : <strong>l'API reste sans état</strong>.
+  </p>
+
+  <h4>Trois garde-fous : l'assistant ne devine jamais</h4>
+  <div class="note garde">
+    <ol style="margin:0">
+      <li>Une question de portée globale (« qui n'a jamais <em>rien</em> reçu ? ») n'hérite jamais du
+          service en cours de discussion.</li>
+      <li>Une question vague (« le seul ? ») ne rejoue pas une requête au hasard : l'assistant rappelle
+          le sujet courant et propose les suites possibles.</li>
+      <li>Un critère absent du modèle (âge, salaire, situation familiale) est <em>signalé</em>, jamais
+          ignoré : le résultat ne peut pas être lu comme la réponse à une question non traitée.</li>
+    </ol>
+  </div>
+
+  <h4>Renfort par modèle de langage — optionnel</h4>
+  <p>
+    Si une clé d'API est configurée, un LLM (<code>llama-3.3-70b-versatile</code> via Groq) complète
+    les règles sur les tournures libres. L'architecture est délibérément restrictive :
+  </p>
+  <div class="note cle">
+    <span class="chapo">Le LLM ne répond jamais à la question</span>
+    Il <em>traduit</em> la phrase en un plan de requête structuré (intention + entités). C'est ensuite
+    le code Django qui exécute le SQL et met en forme le résultat.
+  </div>
+  <div class="schema">
+    <div class="flux">
+      <div class="boite" style="border-color:var(--ia)"><div class="t">Question</div>« montre-moi ceux qui méritent le Hajj »</div>
+      <div class="fh">→</div>
+      <div class="boite" style="border-color:var(--ia)"><div class="t">LLM</div>plan : <code>{intention: priorisation, service: Pèlerinage Hajj}</code></div>
+      <div class="fh">→</div>
+      <div class="boite" style="border-color:var(--attention)"><div class="t">Validation</div>chaque valeur est confrontée à la base — l'inventé est écarté</div>
+      <div class="fh">→</div>
+      <div class="boite" style="border-color:var(--back)"><div class="t">ORM</div>le score d'équité est calculé en SQL</div>
+      <div class="fh">→</div>
+      <div class="boite" style="border-color:var(--back)"><div class="t">Réponse</div>chiffres issus de la base, jamais du modèle</div>
+    </div>
+  </div>
+  <ul>
+    <li><strong>Aucun chiffre ne peut être inventé</strong> — montants et effectifs viennent tous de l'ORM.</li>
+    <li><strong>Aucune donnée nominative ne sort du serveur</strong> — seuls la question et les libellés
+        de services et départements sont transmis. Un test le vérifie explicitement.</li>
+    <li><strong>Tout est revalidé</strong> — service inexistant, année aberrante, département inconnu :
+        écartés avant d'atteindre la couche de requêtes.</li>
+    <li><strong>Les règles restent maîtresses des entités</strong> ; le LLM ne corrige l'intention que
+        lorsqu'elles sont peu sûres.</li>
+    <li><strong>Repli silencieux</strong> — clé absente, panne réseau, quota dépassé ou délai
+        dépassé : l'assistant revient aux règles sans perte de fonctionnalité.</li>
+  </ul>
+  <p>
+    Mesure effectuée sur neuf formulations libres : les règles seules en traitaient huit correctement,
+    et le LLM a corrigé la neuvième (« ceux qui <em>méritent</em> le Hajj » → priorisation, et non
+    liste des bénéficiaires) sans rien dégrader. Chaque réponse indique son moteur.
+  </p>
+
+  <h3>8.3 — Segmentation K-Means</h3>
+  <p>
+    Le personnel est regroupé en profils similaires à partir de quatre variables standardisées :
+    ancienneté, nombre d'enfants, nombre d'aides reçues, montant cumulé perçu. La standardisation est
+    indispensable — sans elle, le montant (en dizaines de milliers) écraserait le nombre d'enfants.
+    Chaque groupe est ensuite étiqueté par comparaison à la moyenne générale
+    (« Sous-servis — à prioriser », « Bien servis »…), ce qui met en évidence les déséquilibres de
+    distribution entre profils.
+  </p>
+</section>
+
+<!-- =========================== 9 =========================== -->
+<section id="regles">
+  <h2><span class="num">9</span>Règles métier</h2>
+
+  <h3>Repérer les oubliés</h3>
+  <p>
+    C'est la requête qui donne son sens au projet : lister les employés qui n'ont
+    <strong>jamais</strong> reçu un service donné.
+  </p>
+<pre><code>SELECT p.* FROM personnel p
+LEFT JOIN transaction t
+       ON t.matricule    = p.matricule
+      AND t.id_activitee = :id_service
+      [AND t.annee       = :annee]
+WHERE t.id_transaction IS NULL;</code></pre>
+  <p>
+    Exprimée via l'ORM par <code>Personnel.objects.exclude(matricule__in=deja_servis)</code>, elle
+    reste lisible et protégée des injections. Le SQL équivalent figure en commentaire dans le code
+    et dans l'interface, pour le jury.
+  </p>
+
+  <h3>Empêcher les doublons</h3>
+  <div class="tab-conteneur"><table>
+    <thead><tr><th>Type de service</th><th>Règle</th><th>Exemple</th></tr></thead>
+    <tbody>
+      <tr><td>Renouvelable</td><td>Une fois <strong>par an</strong> et par employé</td><td>Aide scolaire, colonie de vacances</td></tr>
+      <tr><td>Non renouvelable</td><td>Une seule fois <strong>dans la carrière</strong></td><td>Hajj, mariage, prêt logement</td></tr>
+    </tbody>
+  </table></div>
+  <p>Le contrôle s'exerce à deux niveaux :</p>
+  <ol>
+    <li><strong>Pendant la saisie</strong> — dès que l'admin choisit un employé et un service,
+        l'interface interroge <code>/transactions/verifier-doublon/</code> et affiche une alerte avec
+        l'historique, <em>avant</em> tout enregistrement.</li>
+    <li><strong>À l'enregistrement</strong> — le serializer refuse la création avec un message
+        explicite. Cette seconde barrière est celle qui compte : elle ne peut pas être contournée.</li>
+  </ol>
+
+  <h3>Suivi budgétaire</h3>
+  <p>
+    Chaque activité porte une enveloppe. Le consommé est la somme des <code>montantTR</code> ; le
+    taux détermine un statut, accompagné d'un libellé texte et jamais signalé par la seule couleur.
+  </p>
+  <div class="tab-conteneur"><table>
+    <thead><tr><th>Taux</th><th>Statut</th><th>Effet</th></tr></thead>
+    <tbody>
+      <tr><td>&lt; 80 %</td><td>Sous contrôle</td><td>—</td></tr>
+      <tr><td>≥ 80 % <span class="muet">(réglable)</span></td><td>Seuil atteint</td><td>Alerte sur le tableau de bord</td></tr>
+      <tr><td>≥ 100 %</td><td>Dépassement</td><td>Reste à consommer négatif, signalé en rouge</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Cohérence de l'exercice</h3>
+  <p>
+    <code>annee</code> est déduite de <code>date_transaction</code>, et une incohérence entre les deux
+    est refusée. Sans cette règle, une saisie erronée fausserait durablement toutes les statistiques
+    annuelles et le suivi budgétaire, sans que personne ne s'en aperçoive.
+  </p>
+</section>
+
+<!-- =========================== 10 =========================== -->
+<section id="tests">
+  <h2><span class="num">10</span>Tests et qualité</h2>
+
+  <div class="grille k3" style="margin-bottom:16px">
+    <div class="tuile back"><div class="lib">Tests Django</div><div class="val">92</div>
+      <div class="note">exécution en ~7 s</div></div>
+    <div class="tuile ia"><div class="lib">Sur l'assistant</div><div class="val">46</div>
+      <div class="note">dont la couche LLM</div></div>
+    <div class="tuile front"><div class="lib">Réseau</div><div class="val">0</div>
+      <div class="note">appel externe pendant les tests</div></div>
+  </div>
+
+  <div class="tab-conteneur"><table>
+    <thead><tr><th>Domaine</th><th>Ce qui est vérifié</th></tr></thead>
+    <tbody>
+      <tr><td>Authentification</td><td>API fermée sans jeton, connexion valide, mot de passe erroné rejeté</td></tr>
+      <tr><td>CRUD</td><td>Création, modification, suppression, recherche, tri, activité utilisée non supprimable</td></tr>
+      <tr><td>Équité</td><td>Bénéficiaires, non-bénéficiaires, filtres année et département, taux de couverture</td></tr>
+      <tr><td>Anti-doublon</td><td>Refus même année, acceptation année suivante, blocage définitif des services non renouvelables</td></tr>
+      <tr><td>Budget &amp; statistiques</td><td>Taux, seuils d'alerte, agrégations par service, année, département et sexe</td></tr>
+      <tr><td>Exports</td><td>Excel et PDF générés, types MIME corrects, attestation non vide</td></tr>
+      <tr><td>IA — score</td><td>Le premier du classement n'a jamais été servi ; un employé déjà servi est non éligible</td></tr>
+      <tr><td>IA — assistant</td><td>Politesse, abréviations, fautes de frappe, mots collés, années malformées, homonymes, mémoire de conversation, refus de deviner</td></tr>
+      <tr><td>IA — LLM</td><td>Validation des réponses du modèle, non-fuite de données nominatives, repli sur panne réseau, HTTP 429 et clé absente</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note garde">
+    <span class="chapo">Les tests ne sortent jamais sur le réseau</span>
+    Les appels au LLM sont simulés (<code>unittest.mock</code>) et <code>LLM_ACTIF</code> est forcé à
+    <code>False</code> en mode test. Sans cette précaution, la suite consommerait le quota de l'API et
+    ses résultats dépendraient de la connexion — deux défauts rédhibitoires pour un test.
+  </div>
+
+  <h4>Vérifications complémentaires</h4>
+  <ul>
+    <li>Un test de rendu SSR passe les composants partagés avec des données réalistes, y compris
+        les jeux vides et les valeurs nulles — le <em>build</em> et le <em>lint</em> ne détectent pas
+        une exception au rendu.</li>
+    <li><code>npm run lint</code> (oxlint) et <code>npm run build</code> sur le front.</li>
+    <li>Palette de data-visualisation validée par un outil de simulation des daltonismes.</li>
+  </ul>
+</section>
+
+<!-- =========================== 11 =========================== -->
+<section id="demarrage">
+  <h2><span class="num">11</span>Démarrage</h2>
+
+  <h4>Back-end</h4>
+<pre><code>cd backend
+../venv/Scripts/python.exe manage.py migrate
+../venv/Scripts/python.exe manage.py seed      # 60 employés, 8 services, ~145 transactions
+../venv/Scripts/python.exe manage.py runserver # http://localhost:8000</code></pre>
+
+  <h4>Front-end <span class="muet">(second terminal)</span></h4>
+<pre><code>cd frontend
+npm install
+npm run dev                                    # http://localhost:5173</code></pre>
+
+  <h4>Connexion</h4>
+  <p>Compte de démonstration : <code>admin</code> / <code>admin123</code>. Interface d'administration
+     Django disponible sur <code>/admin/</code>.</p>
+
+  <h4>Assistant — configuration facultative</h4>
+<pre><code># backend/.env  (copié depuis .env.example, exclu du dépôt)
+GROQ_API_KEY=votre_cle        # vide = moteur à règles seul, hors ligne
+GROQ_MODELE=llama-3.3-70b-versatile
+GROQ_TIMEOUT=6</code></pre>
+
+  <h4>Tests</h4>
+<pre><code>cd backend  &amp;&amp; ../venv/Scripts/python.exe manage.py test core
+cd frontend &amp;&amp; npm run lint &amp;&amp; npm run build</code></pre>
+
+  <div class="note limite">
+    <span class="chapo">Avant de rendre le projet</span>
+    Révoquer la clé d'API sur la console du fournisseur, vérifier que <code>backend/.env</code> n'est
+    pas dans le dépôt, et basculer <code>DEBUG</code> à <code>False</code> si l'application est
+    déployée ailleurs qu'en local.
+  </div>
+</section>
+
+<div class="pied">
+  <span>Projet PFA — 4<sup>e</sup> année EMSI · Stage Marsa Maroc</span>
+  <span>Plateforme de Gestion des Actions Sociales — document d'architecture</span>
+</div>
+
+</main>
+</div>
+</body>
+</html>

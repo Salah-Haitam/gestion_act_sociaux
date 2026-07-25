@@ -1,0 +1,32 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# Secrets : jamais dans le depot (le modele .env.example, lui, est versionne)
+.env
+.env.local
+*.key
+
+# Node / Vite
+node_modules/
+dist/
+.vite/
+.tmp-ssr/
+npm-debug.log*
+
+# Editeurs / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Exports generes
+*.xlsx
+*.pdf
