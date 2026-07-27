@@ -312,9 +312,22 @@ export default function Transactions() {
           {/* Alerte automatique : l'employe a-t-il deja beneficie de ce service ? */}
           {verification && (
             <Message
-              type={verification.bloquant ? "erreur" : verification.historique.length ? "attention" : "succes"}
+              type={
+                verification.bloquant
+                  ? "erreur"
+                  : verification.avertissement
+                    ? "attention"
+                    : "succes"
+              }
             >
               {verification.message}
+              {verification.tour && (
+                <div className="petit" style={{ marginTop: 6 }}>
+                  <strong>Rotation equitable</strong> — tour {verification.tour.tour_en_cours} en
+                  cours ; chaque employe doit avoir beneficie{" "}
+                  {verification.tour.minimum} fois avant qu'un nouveau tour s'ouvre.
+                </div>
+              )}
               {verification.historique.length > 0 && (
                 <ul className="liste-puces">
                   {verification.historique.map((h) => (
@@ -350,7 +363,8 @@ export default function Transactions() {
               {activites.map((a) => (
                 <option key={a.id_activitee} value={a.id_activitee}>
                   {a.service} — {formatMAD(a.montantSC)}
-                  {a.unique_par_employe ? " (non renouvelable)" : ""}
+                  {a.regle_attribution === "UNIQUE" ? " (une seule fois)" : ""}
+                  {a.regle_attribution === "ROTATION" ? " (rotation equitable)" : ""}
                 </option>
               ))}
             </select>

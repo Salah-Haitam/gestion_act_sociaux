@@ -5,6 +5,7 @@ from decimal import Decimal
 from rest_framework import serializers
 
 from .models import Activitee, Personnel, Transaction
+from .regles import controler_attribution
 
 
 class ActiviteeSerializer(serializers.ModelSerializer):
@@ -12,6 +13,8 @@ class ActiviteeSerializer(serializers.ModelSerializer):
     budget_restant = serializers.SerializerMethodField()
     taux_consommation = serializers.SerializerMethodField()
     nb_beneficiaires = serializers.SerializerMethodField()
+    regle_libelle = serializers.CharField(source="get_regle_attribution_display", read_only=True)
+    tour = serializers.SerializerMethodField()
 
     class Meta:
         model = Activitee
@@ -21,12 +24,18 @@ class ActiviteeSerializer(serializers.ModelSerializer):
             "montantSC",
             "budget_alloue",
             "description",
-            "unique_par_employe",
+            "regle_attribution",
+            "regle_libelle",
+            "tour",
             "montant_consomme",
             "budget_restant",
             "taux_consommation",
             "nb_beneficiaires",
         ]
+
+    def get_tour(self, obj):
+        """Etat du tour de rotation, uniquement pour les services concernes."""
+        return obj.tour_en_cours() if obj.regle_attribution == Activitee.ROTATION else None
 
     def _consomme(self, obj):
         # Valeur pre-calculee par l'annotation du ViewSet quand elle existe.
@@ -139,35 +148,13 @@ class TransactionSerializer(serializers.ModelSerializer):
         if annee:
             attrs["annee"] = annee
 
-        # Doublon : l'employe a-t-il deja beneficie de ce service ?
+        # Regle d'attribution : l'employe a-t-il droit a ce service ?
         if personnel and activitee:
-            doublons = Transaction.objects.filter(matricule=personnel, id_activitee=activitee)
-            if instance is not None:
-                doublons = doublons.exclude(pk=instance.pk)
-            if activitee.unique_par_employe:
-                existante = doublons.first()
-                if existante:
-                    raise serializers.ValidationError(
-                        {
-                            "non_field_errors": [
-                                f"DOUBLON : {personnel.nom} {personnel.prenom} a deja beneficie "
-                                f"du service « {activitee.service} » en {existante.annee} "
-                                f"(non renouvelable)."
-                            ]
-                        }
-                    )
-            elif annee:
-                existante = doublons.filter(annee=annee).first()
-                if existante:
-                    raise serializers.ValidationError(
-                        {
-                            "non_field_errors": [
-                                f"DOUBLON : {personnel.nom} {personnel.prenom} a deja beneficie "
-                                f"du service « {activitee.service} » en {annee} "
-                                f"(transaction #{existante.id_transaction})."
-                            ]
-                        }
-                    )
+            message = controler_attribution(
+                personnel, activitee, annee, exclure=instance.pk if instance else None
+            )
+            if message:
+                raise serializers.ValidationError({"non_field_errors": [message]})
         return attrs
 
 

@@ -15,8 +15,31 @@ const VIDE = {
   montantSC: "",
   budget_alloue: "",
   description: "",
-  unique_par_employe: false,
+  regle_attribution: "ANNUELLE",
 };
+
+const REGLES = [
+  {
+    code: "ANNUELLE",
+    libelle: "Renouvelable chaque annee",
+    aide: "Un employe peut en beneficier une fois par an (aide scolaire, colonie de vacances).",
+    classe: "",
+  },
+  {
+    code: "UNIQUE",
+    libelle: "Une seule fois par employe",
+    aide: "Accorde une seule fois dans la carriere (mariage, pret logement).",
+    classe: "attention",
+  },
+  {
+    code: "ROTATION",
+    libelle: "Rotation equitable",
+    aide:
+      "Un employe ne peut en beneficier une nouvelle fois que lorsque tout le personnel " +
+      "a ete servi autant de fois que lui (Hajj).",
+    classe: "accent",
+  },
+];
 
 export default function Activites() {
   const [lignes, setLignes] = useState([]);
@@ -53,7 +76,7 @@ export default function Activites() {
       montantSC: edition.montantSC,
       budget_alloue: edition.budget_alloue || 0,
       description: edition.description || "",
-      unique_par_employe: edition.unique_par_employe,
+      regle_attribution: edition.regle_attribution,
     };
     try {
       if (edition.creation) {
@@ -146,14 +169,22 @@ export default function Activites() {
                 ),
               },
               {
-                cle: "unique_par_employe",
-                titre: "Renouvelable",
-                rendu: (l) =>
-                  l.unique_par_employe ? (
-                    <span className="badge attention">Une seule fois</span>
-                  ) : (
-                    <span className="badge">Chaque annee</span>
-                  ),
+                cle: "regle_attribution",
+                titre: "Regle d'attribution",
+                rendu: (l) => {
+                  const regle = REGLES.find((r) => r.code === l.regle_attribution) || REGLES[0];
+                  return (
+                    <div>
+                      <span className={`badge ${regle.classe}`}>{regle.libelle}</span>
+                      {l.tour && (
+                        <div className="muet petit" style={{ marginTop: 4 }}>
+                          Tour {l.tour.tour} — {l.tour.restants} employe(s) en attente sur{" "}
+                          {l.tour.effectif}
+                        </div>
+                      )}
+                    </div>
+                  );
+                },
               },
               { cle: "montantSC", titre: "Montant standard", num: true, tri: "montantSC", rendu: (l) => formatMAD(l.montantSC) },
               { cle: "budget_alloue", titre: "Budget alloue", num: true, tri: "budget_alloue", rendu: (l) => formatMAD(l.budget_alloue) },
@@ -248,14 +279,23 @@ export default function Activites() {
               onChange={(e) => setEdition({ ...edition, description: e.target.value })}
             />
           </div>
-          <label className="petit" style={{ fontWeight: 500, display: "flex", gap: 8, alignItems: "center" }}>
-            <input
-              type="checkbox"
-              checked={edition.unique_par_employe}
-              onChange={(e) => setEdition({ ...edition, unique_par_employe: e.target.checked })}
-            />
-            Service non renouvelable — un employe ne peut en beneficier qu'une seule fois
-          </label>
+          <div className="champ" style={{ marginBottom: 0 }}>
+            <label htmlFor="regle">Regle d'attribution</label>
+            <select
+              id="regle"
+              value={edition.regle_attribution}
+              onChange={(e) => setEdition({ ...edition, regle_attribution: e.target.value })}
+            >
+              {REGLES.map((r) => (
+                <option key={r.code} value={r.code}>
+                  {r.libelle}
+                </option>
+              ))}
+            </select>
+            <p className="muet petit" style={{ margin: "6px 0 0" }}>
+              {REGLES.find((r) => r.code === edition.regle_attribution)?.aide}
+            </p>
+          </div>
         </Modale>
       )}
 

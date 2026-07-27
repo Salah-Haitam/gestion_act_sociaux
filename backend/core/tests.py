@@ -39,7 +39,13 @@ class BaseAPITest(APITestCase):
             service="Pelerinage Hajj",
             montantSC=Decimal("25000"),
             budget_alloue=Decimal("50000"),
-            unique_par_employe=True,
+            regle_attribution=Activitee.ROTATION,
+        )
+        cls.mariage = Activitee.objects.create(
+            service="Aide au mariage",
+            montantSC=Decimal("8000"),
+            budget_alloue=Decimal("40000"),
+            regle_attribution=Activitee.UNIQUE,
         )
 
         cls.servi = Personnel.objects.create(
@@ -144,7 +150,8 @@ class DoublonTest(BaseAPITest):
             "/api/transactions/", self._payload(self.servi, self.scolaire, "2024-11-02"), format="json"
         )
         self.assertEqual(reponse.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("DOUBLON", str(reponse.data))
+        self.assertIn("REFUS", str(reponse.data))
+        self.assertIn("deja beneficie", str(reponse.data))
 
     def test_creation_acceptee_une_autre_annee(self):
         reponse = self.client.post(
@@ -153,19 +160,21 @@ class DoublonTest(BaseAPITest):
         self.assertEqual(reponse.status_code, status.HTTP_201_CREATED)
         self.assertEqual(reponse.data["annee"], 2025)
 
-    def test_service_non_renouvelable_bloque_toute_annee(self):
+    def test_service_unique_bloque_toute_annee(self):
         Transaction.objects.create(
             matricule=self.servi,
-            id_activitee=self.hajj,
-            montantTR=Decimal("25000"),
+            id_activitee=self.mariage,
+            montantTR=Decimal("8000"),
             date_transaction=date(2022, 5, 1),
             annee=2022,
         )
         reponse = self.client.post(
-            "/api/transactions/", self._payload(self.servi, self.hajj, "2026-05-01"), format="json"
+            "/api/transactions/",
+            self._payload(self.servi, self.mariage, "2026-05-01"),
+            format="json",
         )
         self.assertEqual(reponse.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("non renouvelable", str(reponse.data))
+        self.assertIn("une seule fois", str(reponse.data))
 
     def test_endpoint_de_verification_prealable(self):
         url = (
@@ -184,6 +193,117 @@ class DoublonTest(BaseAPITest):
         reponse = self.client.get(url)
         self.assertFalse(reponse.data["doublon"])
         self.assertIn("jamais beneficie", reponse.data["message"])
+
+
+class RotationTest(BaseAPITest):
+    """
+    Rotation equitable (Hajj) : un employe ne peut repartir que lorsque tout le
+    personnel a beneficie du meme nombre de departs.
+    """
+
+    def _partir(self, employe, annee):
+        return Transaction.objects.create(
+            matricule=employe,
+            id_activitee=self.hajj,
+            montantTR=Decimal("25000"),
+            date_transaction=date(annee, 5, 1),
+            annee=annee,
+        )
+
+    def _demander(self, employe, jour="2026-06-01"):
+        return self.client.post(
+            "/api/transactions/",
+            {
+                "matricule": employe.pk,
+                "id_activitee": self.hajj.pk,
+                "montantTR": "25000.00",
+                "duree": 0,
+                "date_transaction": jour,
+            },
+            format="json",
+        )
+
+    def test_premier_depart_autorise_pour_tous(self):
+        self.assertEqual(self._demander(self.servi).status_code, status.HTTP_201_CREATED)
+        self.assertEqual(self._demander(self.oublie).status_code, status.HTTP_201_CREATED)
+
+    def test_second_depart_refuse_si_un_collegue_n_est_jamais_parti(self):
+        self._partir(self.servi, 2024)
+        reponse = self._demander(self.servi)
+        self.assertEqual(reponse.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("encore en attente", str(reponse.data))
+
+    def test_second_depart_autorise_quand_le_tour_est_complet(self):
+        self._partir(self.servi, 2024)
+        self._partir(self.oublie, 2025)
+        # Tout l'effectif est a 1 depart : le tour 2 s'ouvre.
+        self.assertEqual(self._demander(self.servi).status_code, status.HTTP_201_CREATED)
+
+    def test_troisieme_depart_refuse_tant_que_le_tour_2_est_incomplet(self):
+        self._partir(self.servi, 2024)
+        self._partir(self.oublie, 2025)
+        self._partir(self.servi, 2026)  # 2e depart, legitime
+        reponse = self._demander(self.servi)  # 3e : trop tot
+        self.assertEqual(reponse.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_une_nouvelle_recrue_rouvre_le_tour(self):
+        """Cas limite : un arrivant remet le minimum a zero."""
+        self._partir(self.servi, 2024)
+        self._partir(self.oublie, 2025)
+        Personnel.objects.create(
+            matricule="MM0500",
+            nom="Recrue",
+            prenom="Nouvelle",
+            sexe="F",
+            departement="Commercial",
+            date_recrutement=date(2026, 1, 5),
+        )
+        reponse = self._demander(self.servi)
+        self.assertEqual(reponse.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_etat_du_tour_expose_par_l_api(self):
+        self._partir(self.servi, 2024)
+        url = (
+            f"/api/transactions/verifier-doublon/?matricule={self.servi.pk}"
+            f"&id_activitee={self.hajj.pk}&annee=2026"
+        )
+        donnees = self.client.get(url).data
+        self.assertTrue(donnees["bloquant"])
+        self.assertEqual(donnees["regle"], "ROTATION")
+        self.assertEqual(donnees["nb_attributions"], 1)
+        self.assertEqual(donnees["tour"]["tour_en_cours"], 1)
+        self.assertEqual(donnees["tour"]["en_attente"], 1)
+
+    def test_tour_expose_sur_l_activite(self):
+        self._partir(self.servi, 2024)
+        activite = next(
+            a for a in self.client.get("/api/activites/").data["results"]
+            if a["id_activitee"] == self.hajj.pk
+        )
+        self.assertEqual(activite["regle_attribution"], "ROTATION")
+        self.assertEqual(activite["tour"]["tour"], 1)
+        self.assertEqual(activite["tour"]["restants"], 1)
+
+    def test_pas_de_tour_pour_les_autres_regles(self):
+        activite = next(
+            a for a in self.client.get("/api/activites/").data["results"]
+            if a["id_activitee"] == self.scolaire.pk
+        )
+        self.assertIsNone(activite["tour"])
+
+    def test_priorisation_ecarte_celui_qui_est_en_avance(self):
+        self._partir(self.servi, 2024)
+        classement = {r["matricule"]: r for r in scorer_beneficiaires(self.hajj)}
+        self.assertFalse(classement["MM0001"]["eligible"])
+        self.assertTrue(classement["MM0002"]["eligible"])
+
+    def test_priorisation_reeligible_au_tour_suivant(self):
+        self._partir(self.servi, 2024)
+        self._partir(self.oublie, 2025)
+        classement = {r["matricule"]: r for r in scorer_beneficiaires(self.hajj)}
+        self.assertTrue(classement["MM0001"]["eligible"])
+        self.assertTrue(classement["MM0002"]["eligible"])
+        self.assertIn("Tour 2", " ".join(classement["MM0001"]["justifications"]))
 
 
 class CrudTest(BaseAPITest):
@@ -463,7 +583,7 @@ class ChatbotIntentionsTest(BaseAPITest):
     def test_classement_des_services(self):
         reponse = repondre("quel service coute le plus cher ?")
         self.assertIn("Aide scolaire", reponse["reponse"])
-        self.assertEqual(len(reponse["donnees"]), 2)
+        self.assertEqual(len(reponse["donnees"]), Activitee.objects.count())
 
     def test_classement_inverse(self):
         self.assertIn("le moins dote", repondre("quel service est le moins distribue ?")["reponse"])
@@ -474,14 +594,15 @@ class ChatbotIntentionsTest(BaseAPITest):
 
     def test_catalogue_des_services(self):
         reponse = repondre("quels services existent ?")
-        self.assertEqual(len(reponse["donnees"]), 2)
+        self.assertEqual(len(reponse["donnees"]), Activitee.objects.count())
+        self.assertIn("regle", reponse["colonnes"])
 
     def test_effectif(self):
         self.assertIn("2 employe(s)", repondre("combien d'employes avons-nous ?")["reponse"])
 
     def test_budget_signale_les_depassements(self):
         reponse = repondre("quel est l'etat du budget ?")
-        self.assertEqual(len(reponse["donnees"]), 2)
+        self.assertEqual(len(reponse["donnees"]), Activitee.objects.count())
         self.assertEqual(reponse["colonnes"][0], "service")
 
     def test_montant_formate_avec_separateur(self):

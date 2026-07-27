@@ -71,7 +71,7 @@ personnel (1) ──< transaction >── (1) activitee
 `nb_enfants`
 
 **`activitee`** — `id_activitee` (PK), `service`, `montantSC`, `budget_alloue`, `description`,
-`unique_par_employe`
+`regle_attribution`
 
 **`transaction`** — `id_transaction` (PK), `matricule` (FK), `id_activitee` (FK), `montantTR`,
 `duree`, `date_transaction`, `annee`
@@ -84,7 +84,7 @@ bénéficié.
 | Champ | Table | Pourquoi |
 |---|---|---|
 | `budget_alloue` | `activitee` | Sans enveloppe par service, la gestion budgétaire et ses alertes sont impossibles. |
-| `unique_par_employe` | `activitee` | Le Hajj ou le mariage ne s'accordent qu'une fois ; une aide scolaire est renouvelable chaque année. La règle anti-doublon en dépend. |
+| `regle_attribution` | `activitee` | Trois comportements possibles (annuelle, unique, rotation équitable). Toute la règle anti-doublon en dépend. Voir ci-dessous. |
 | `sexe` | `personnel` | Permet de filtrer et surtout de **mesurer l'équité hommes / femmes** de la distribution. Facultatif : les dossiers anciens restent « non renseigné ». |
 
 Le champ `sexe` est arrivé après coup : la migration `0003_remplir_sexe` le renseigne pour les
@@ -110,10 +110,37 @@ Toutes les routes de l'API exigent une session valide (`401` sinon).
   [`views.py`](backend/core/views.py)).
 - Filtrage par année et par département.
 - **Alerte automatique de doublon** à deux niveaux : contrôle préalable en direct dans le formulaire
-  (`GET /api/transactions/verifier-doublon/`) et refus côté serveur à l'enregistrement
-  (validation dans [`serializers.py`](backend/core/serializers.py)) — le front ne peut pas être
-  contourné.
+  (`GET /api/transactions/verifier-doublon/`) et refus côté serveur à l'enregistrement. Les deux
+  s'appuient sur le **même module** [`regles.py`](backend/core/regles.py), ils ne peuvent donc pas
+  diverger — et le front ne peut pas être contourné.
 - Liste des employés n'ayant **jamais rien reçu**, tous services confondus.
+
+### Les trois règles d'attribution
+Chaque activité porte une `regle_attribution` qui détermine quand un employé y a droit.
+
+| Règle | Condition | Exemples |
+|---|---|---|
+| `ANNUELLE` | Une fois par an et par employé | Aide scolaire, colonie de vacances, prime de naissance |
+| `UNIQUE` | Une seule fois dans la carrière | Aide au mariage, prêt logement |
+| `ROTATION` | **Une fois par tour** — un employé n'est éligible que s'il compte le *minimum* d'attributions de l'effectif | Pèlerinage Hajj |
+
+La règle **`ROTATION`** traduit une exigence d'équité concrète : *personne ne repart tant qu'un
+collègue n'est jamais parti*. Quand tout le personnel a été servi une fois, un deuxième tour s'ouvre
+et chacun redevient éligible. Formellement, l'attribution est autorisée si et seulement si
+
+```
+attributions(employé) == min( attributions(e) pour tout e du personnel )
+```
+
+Cette formulation gère tous les tours sans cas particulier. Elle a deux conséquences à connaître :
+
+- L'arrivée d'un nouvel employé **remet le minimum à zéro** et referme le tour en cours — ce qui est
+  le comportement voulu : le nouvel arrivant passe avant un second départ.
+- Sur un effectif réel, le premier tour n'est jamais complet ; en pratique la règle équivaut donc à
+  « une fois par carrière », le second tour restant théorique. C'est voulu : la règle est *juste*
+  plutôt que restrictive.
+
+L'interface affiche en permanence le tour en cours et le nombre d'employés encore en attente.
 
 ### Gestion CRUD
 Ajout / modification / suppression du personnel, des activités et des transactions. Une activité
@@ -334,8 +361,9 @@ cd backend
 python manage.py test core
 ```
 
-92 tests couvrent l'authentification, le CRUD, la logique d'équité (bénéficiaires /
-non-bénéficiaires / taux de couverture), les règles anti-doublon, le budget et ses alertes, les
+102 tests couvrent l'authentification, le CRUD, la logique d'équité (bénéficiaires /
+non-bénéficiaires / taux de couverture), les trois règles d'attribution — dont un cycle de rotation
+complet et le cas de la nouvelle recrue —, le budget et ses alertes, les
 exports Excel et PDF, le champ `sexe` (filtres, statistiques, validation) ainsi que les trois
 briques d'IA — dont 46 tests pour le seul assistant : politesse, abréviations, fautes de frappe,
 mots collés, années malformées, homonymes, mémoire de conversation, critères absents du modèle,
@@ -362,13 +390,14 @@ gestion_sociaux/
 │   ├── config/                    settings, urls, wsgi
 │   ├── core/
 │   │   ├── models.py              personnel, activitee, transaction
-│   │   ├── serializers.py         sérialisation + règles anti-doublon
+│   │   ├── serializers.py         sérialisation + validation
+│   │   ├── regles.py              les 3 règles d'attribution (source unique)
 │   │   ├── views.py               API REST, équité, budget, stats, IA
 │   │   ├── filters.py             filtres de recherche
 │   │   ├── ai.py                  score d'équité, K-Means, assistant NL
 │   │   ├── llm.py                 renfort LLM optionnel (Groq) + garde-fous
 │   │   ├── exports.py             Excel et PDF
-│   │   ├── tests.py               92 tests
+│   │   ├── tests.py               102 tests
 │   │   └── management/commands/seed.py
 │   ├── .env.example               modèle de configuration (.env est ignoré)
 │   ├── db.sqlite3

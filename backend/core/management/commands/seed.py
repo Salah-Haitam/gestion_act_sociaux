@@ -37,15 +37,17 @@ DEPARTEMENTS = [
 ]
 
 SERVICES = [
-    # (service, montantSC, budget, non renouvelable, description)
-    ("Aide scolaire", 2500, 350000, False, "Aide a la rentree scolaire, par enfant scolarise."),
-    ("Aide au mariage", 8000, 200000, True, "Prime unique versee a l'occasion du mariage."),
-    ("Pelerinage Hajj", 25000, 250000, True, "Participation aux frais du pelerinage a La Mecque."),
-    ("Prime de naissance", 3000, 120000, False, "Prime versee a chaque naissance."),
-    ("Aide au deces", 10000, 150000, False, "Secours accorde en cas de deces d'un proche."),
-    ("Colonie de vacances", 1800, 180000, False, "Sejour d'ete pour les enfants du personnel."),
-    ("Aide medicale exceptionnelle", 6000, 200000, False, "Prise en charge de frais medicaux lourds."),
-    ("Pret logement", 40000, 400000, True, "Avance remboursable pour l'acquisition d'un logement."),
+    # (service, montantSC, budget, regle d'attribution, description)
+    ("Aide scolaire", 2500, 350000, "ANNUELLE", "Aide a la rentree scolaire, par enfant scolarise."),
+    ("Aide au mariage", 8000, 200000, "UNIQUE", "Prime unique versee a l'occasion du mariage."),
+    ("Pelerinage Hajj", 25000, 250000, "ROTATION",
+     "Participation aux frais du pelerinage a La Mecque. Un employe ne peut repartir "
+     "que lorsque tout le personnel a beneficie du meme nombre de departs."),
+    ("Prime de naissance", 3000, 120000, "ANNUELLE", "Prime versee a chaque naissance."),
+    ("Aide au deces", 10000, 150000, "ANNUELLE", "Secours accorde en cas de deces d'un proche."),
+    ("Colonie de vacances", 1800, 180000, "ANNUELLE", "Sejour d'ete pour les enfants du personnel."),
+    ("Aide medicale exceptionnelle", 6000, 200000, "ANNUELLE", "Prise en charge de frais medicaux lourds."),
+    ("Pret logement", 40000, 400000, "UNIQUE", "Avance remboursable pour l'acquisition d'un logement."),
 ]
 
 ANNEES = [2022, 2023, 2024, 2025, 2026]
@@ -96,13 +98,13 @@ class Command(BaseCommand):
 
     def _creer_activites(self):
         activites = []
-        for service, montant, budget, unique, description in SERVICES:
+        for service, montant, budget, regle, description in SERVICES:
             activitee, _ = Activitee.objects.get_or_create(
                 service=service,
                 defaults={
                     "montantSC": Decimal(montant),
                     "budget_alloue": Decimal(budget),
-                    "unique_par_employe": unique,
+                    "regle_attribution": regle,
                     "description": description,
                 },
             )
@@ -196,15 +198,16 @@ class Command(BaseCommand):
                     )
                 )
 
-        # Deduplique : un service non renouvelable une seule fois, les autres
-        # une fois par annee. (Les regles metier de l'API l'imposent aussi.)
+        # Deduplique : un service UNIQUE ou en ROTATION n'est accorde qu'une
+        # fois par employe dans ce jeu de demonstration (le premier tour n'est
+        # jamais complet) ; les services annuels, une fois par annee.
         vues = set()
         propres = []
         for tr in transactions:
             activitee = tr.id_activitee
             cle = (
                 (tr.matricule_id, activitee.id_activitee)
-                if activitee.unique_par_employe
+                if not activitee.renouvelable_chaque_annee
                 else (tr.matricule_id, activitee.id_activitee, tr.annee)
             )
             if cle in vues:

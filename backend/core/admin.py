@@ -14,7 +14,8 @@ class PersonnelAdmin(admin.ModelAdmin):
 
 @admin.register(Activitee)
 class ActiviteeAdmin(admin.ModelAdmin):
-    list_display = ("id_activitee", "service", "montantSC", "budget_alloue", "unique_par_employe")
+    list_display = ("id_activitee", "service", "montantSC", "budget_alloue", "regle_attribution")
+    list_filter = ("regle_attribution",)
     search_fields = ("service",)
 
 

@@ -50,7 +50,20 @@ class Personnel(models.Model):
 
 
 class Activitee(models.Model):
-    """Une action sociale proposee par l'entreprise (aide scolaire, mariage, Hajj...)."""
+    """
+    Une action sociale proposee par l'entreprise (aide scolaire, mariage, Hajj...).
+
+    Trois regles d'attribution sont possibles, cf. `regle_attribution`.
+    """
+
+    ANNUELLE = "ANNUELLE"
+    UNIQUE = "UNIQUE"
+    ROTATION = "ROTATION"
+    REGLES = [
+        (ANNUELLE, "Renouvelable chaque annee"),
+        (UNIQUE, "Une seule fois par employe"),
+        (ROTATION, "Rotation equitable : un nouveau tour quand tout le monde a ete servi"),
+    ]
 
     id_activitee = models.AutoField(primary_key=True)
     service = models.CharField("Service", max_length=150, unique=True)
@@ -68,9 +81,14 @@ class Activitee(models.Model):
         validators=[MinValueValidator(0)],
     )
     description = models.TextField("Description", blank=True, default="")
-    # Un service non renouvelable ne peut etre accorde qu'une seule fois par
-    # employe (Hajj, mariage). Les autres peuvent l'etre chaque annee.
-    unique_par_employe = models.BooleanField("Non renouvelable", default=False)
+    # ANNUELLE : une fois par an et par employe (aide scolaire, colonie).
+    # UNIQUE   : une seule fois dans la carriere (mariage, pret logement).
+    # ROTATION : une seule fois par TOUR. Un employe ne peut repartir que
+    #            lorsque tout le personnel a ete servi autant de fois que lui
+    #            (Hajj : personne ne repart tant qu'un collegue n'est jamais parti).
+    regle_attribution = models.CharField(
+        "Regle d'attribution", max_length=10, choices=REGLES, default=ANNUELLE
+    )
 
     class Meta:
         db_table = "activitee"
@@ -80,6 +98,41 @@ class Activitee(models.Model):
 
     def __str__(self):
         return self.service
+
+    @property
+    def renouvelable_chaque_annee(self):
+        return self.regle_attribution == self.ANNUELLE
+
+    def attributions_par_employe(self):
+        """Nombre de fois que chaque employe a beneficie de ce service."""
+        return Personnel.objects.annotate(
+            nb=models.Count(
+                "transactions", filter=models.Q(transactions__id_activitee=self), distinct=True
+            )
+        )
+
+    def tour_en_cours(self):
+        """
+        Etat du tour de rotation.
+
+        `minimum` est le plus petit nombre d'attributions observe sur
+        l'effectif : c'est le seuil qu'un employe ne doit pas depasser pour
+        rester eligible. `restants` compte ceux qui sont encore a ce seuil.
+        """
+        agregat = self.attributions_par_employe().aggregate(
+            minimum=models.Min("nb"), effectif=models.Count("matricule")
+        )
+        minimum = agregat["minimum"] or 0
+        restants = self.attributions_par_employe().filter(nb=minimum).count()
+        return {
+            "minimum": minimum,
+            "tour": minimum + 1,  # tour en cours, lisible par un humain
+            "restants": restants,
+            "effectif": agregat["effectif"] or 0,
+        }
+
+    def attributions_de(self, personnel) -> int:
+        return self.transactions.filter(matricule=personnel).count()
 
 
 class Transaction(models.Model):

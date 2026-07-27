@@ -233,7 +233,7 @@ td code{white-space:nowrap}
       <div class="note">lignes de Python</div></div>
     <div class="tuile front"><div class="lib">Front-end</div><div class="val">~3 600</div>
       <div class="note">lignes de JSX / CSS</div></div>
-    <div class="tuile ia"><div class="lib">Tests</div><div class="val">92</div>
+    <div class="tuile ia"><div class="lib">Tests</div><div class="val">102</div>
       <div class="note">automatisés, hors ligne</div></div>
   </div>
 
@@ -365,7 +365,7 @@ td code{white-space:nowrap}
       <div class="fh">&gt;── 1</div>
       <div class="boite" style="border-color:var(--data);flex:1">
         <div class="t">activitee</div>
-        <code>id_activitee</code> PK<br>service<br>montantSC<br>budget_alloue<br>unique_par_employe
+        <code>id_activitee</code> PK<br>service<br>montantSC<br>budget_alloue<br>regle_attribution
       </div>
     </div>
     <div class="legende-schema">
@@ -381,9 +381,9 @@ td code{white-space:nowrap}
       <tbody>
         <tr><td><code>budget_alloue</code></td><td>activitee</td>
             <td>Sans enveloppe par service, la gestion budgétaire et ses alertes sont impossibles.</td></tr>
-        <tr><td><code>unique_par_employe</code></td><td>activitee</td>
-            <td>Le Hajj ou le mariage ne s'accordent qu'une fois dans une carrière ; une aide scolaire
-                est renouvelable chaque année. Toute la règle anti-doublon repose sur cette distinction.</td></tr>
+        <tr><td><code>regle_attribution</code></td><td>activitee</td>
+            <td>Exprime trois comportements au lieu de deux : annuelle, unique, ou rotation équitable
+                (§&nbsp;9). Toute la règle anti-doublon repose sur ce champ.</td></tr>
         <tr><td><code>sexe</code></td><td>personnel</td>
             <td>Permet de filtrer et surtout de <strong>mesurer l'équité hommes / femmes</strong>.
                 Facultatif : les dossiers incomplets restent « non renseigné ».</td></tr>
@@ -440,7 +440,8 @@ backend/
 │   ├── llm.py             <span class="cmt">188 l. — renfort LLM optionnel + garde-fous</span>
 │   ├── exports.py         <span class="cmt">204 l. — génération Excel (openpyxl) et PDF (reportlab)</span>
 │   ├── admin.py           <span class="cmt">interface d'administration Django</span>
-│   ├── tests.py           <span class="cmt">637 l. — 92 tests</span>
+│   ├── regles.py          <span class="cmt">les 3 regles d'attribution — source unique de decision</span>
+│   ├── tests.py           <span class="cmt">102 tests</span>
 │   └── management/commands/seed.py   <span class="cmt">jeu de démonstration</span>
 ├── .env.example           <span class="cmt">modèle de configuration (.env est ignoré par git)</span>
 └── db.sqlite3
@@ -845,14 +846,54 @@ WHERE t.id_transaction IS NULL;</code></pre>
     et dans l'interface, pour le jury.
   </p>
 
-  <h3>Empêcher les doublons</h3>
+  <h3>Les trois règles d'attribution</h3>
+  <p>
+    Chaque activité porte une <code>regle_attribution</code>. Une seule et même fonction —
+    <code>core/regles.py</code> — décide du droit ; le serializer s'en sert pour refuser une écriture,
+    l'endpoint de vérification pour prévenir l'administrateur avant la saisie. Les deux ne peuvent
+    donc pas diverger.
+  </p>
   <div class="tab-conteneur"><table>
-    <thead><tr><th>Type de service</th><th>Règle</th><th>Exemple</th></tr></thead>
+    <thead><tr><th>Règle</th><th>Condition</th><th>Exemples</th></tr></thead>
     <tbody>
-      <tr><td>Renouvelable</td><td>Une fois <strong>par an</strong> et par employé</td><td>Aide scolaire, colonie de vacances</td></tr>
-      <tr><td>Non renouvelable</td><td>Une seule fois <strong>dans la carrière</strong></td><td>Hajj, mariage, prêt logement</td></tr>
+      <tr><td><code>ANNUELLE</code></td><td>Une fois <strong>par an</strong> et par employé</td><td>Aide scolaire, colonie de vacances</td></tr>
+      <tr><td><code>UNIQUE</code></td><td>Une seule fois <strong>dans la carrière</strong></td><td>Mariage, prêt logement</td></tr>
+      <tr><td><code>ROTATION</code></td><td>Une fois <strong>par tour</strong></td><td>Pèlerinage Hajj</td></tr>
     </tbody>
   </table></div>
+
+  <h4>La rotation équitable</h4>
+  <p>
+    Elle traduit une exigence concrète de la DRH : <strong>personne ne repart tant qu'un collègue
+    n'est jamais parti</strong>. Un employé n'est éligible que s'il compte le <em>minimum</em>
+    d'attributions observé sur l'effectif :
+  </p>
+<pre><code>attributions(employé) == min( attributions(e) pour tout e du personnel )</code></pre>
+  <p>
+    Cette formulation gère tous les tours sans cas particulier : au départ tout le monde est à zéro
+    et chacun est éligible ; dès qu'un employé part, il passe au-dessus du minimum et se trouve
+    bloqué ; quand l'effectif entier a été servi une fois, le minimum devient 1 et un deuxième tour
+    s'ouvre pour tous.
+  </p>
+  <div class="schema">
+    <div class="flux">
+      <div class="boite"><div class="t">Tour 1 ouvert</div>min = 0 · tout le monde éligible</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">A part</div>A = 1 &gt; min = 0 · A bloqué, B et C éligibles</div>
+      <div class="fh">→</div>
+      <div class="boite"><div class="t">B et C partent</div>tous à 1 · le tour est complet</div>
+      <div class="fh">→</div>
+      <div class="boite" style="border-color:var(--bon)"><div class="t">Tour 2 ouvert</div>min = 1 · A peut repartir</div>
+    </div>
+  </div>
+  <div class="note garde">
+    <span class="chapo">Deux conséquences à connaître</span>
+    L'arrivée d'un nouvel employé <strong>remet le minimum à zéro</strong> et referme le tour en
+    cours : le nouvel arrivant passe avant tout second départ — c'est le comportement voulu. Et sur
+    un effectif réel, le premier tour n'est jamais complet, si bien qu'en pratique la règle équivaut
+    à « une fois par carrière », le second tour restant théorique. C'est assumé : la règle est
+    <em>juste</em> plutôt que restrictive.
+  </div>
   <p>Le contrôle s'exerce à deux niveaux :</p>
   <ol>
     <li><strong>Pendant la saisie</strong> — dès que l'admin choisit un employé et un service,
@@ -889,7 +930,7 @@ WHERE t.id_transaction IS NULL;</code></pre>
   <h2><span class="num">10</span>Tests et qualité</h2>
 
   <div class="grille k3" style="margin-bottom:16px">
-    <div class="tuile back"><div class="lib">Tests Django</div><div class="val">92</div>
+    <div class="tuile back"><div class="lib">Tests Django</div><div class="val">102</div>
       <div class="note">exécution en ~7 s</div></div>
     <div class="tuile ia"><div class="lib">Sur l'assistant</div><div class="val">46</div>
       <div class="note">dont la couche LLM</div></div>

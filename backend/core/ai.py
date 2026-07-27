@@ -118,32 +118,46 @@ def scorer_beneficiaires(activitee: Activitee, annee: int | None = None, limite:
     nb_aides = _normaliser([float(e.nb_aides) for e in employes])
     montants = _normaliser([float(e.total_percu or 0) for e in employes])
 
+    # Pour un service en rotation, la reference n'est pas « n'a jamais recu »
+    # mais « est au minimum d'attributions » : au deuxieme tour, tout le monde
+    # a deja recu une fois, et c'est normal.
+    rotation = activitee.regle_attribution == Activitee.ROTATION
+    minimum = min(e.deja_ce_service for e in employes) if rotation else 0
+
     resultats = []
     for i, emp in enumerate(employes):
         jamais_service = emp.deja_ce_service == 0
         deja_cette_annee = emp.deja_ce_service_annee > 0
+        au_minimum = emp.deja_ce_service == minimum
+        # Critere « prioritaire au titre du service lui-meme ».
+        prioritaire = au_minimum if rotation else jamais_service
 
         score = 100.0 * (
-            ponderation["jamais"] * (1.0 if jamais_service else 0.0)
+            ponderation["jamais"] * (1.0 if prioritaire else 0.0)
             + ponderation["rarete"] * (1.0 - nb_aides[i])
             + ponderation["montant"] * (1.0 - montants[i])
             + ponderation["anciennete"] * anciennetes[i]
             + ponderation["enfants"] * enfants[i]
         )
 
-        # Un employe deja servi cette annee (ou definitivement pour un service
-        # non renouvelable) n'est pas eligible : score fortement penalise.
-        eligible = True
-        if activitee.unique_par_employe and not jamais_service:
-            eligible = False
-            score *= 0.1
-        elif deja_cette_annee:
-            eligible = False
+        # Un employe non eligible reste dans le classement, mais son score est
+        # fortement penalise pour qu'il n'apparaisse jamais en tete.
+        if activitee.regle_attribution == Activitee.UNIQUE:
+            eligible = jamais_service
+        elif rotation:
+            eligible = au_minimum
+        else:
+            eligible = not deja_cette_annee
+        if not eligible:
             score *= 0.1
 
         justifications = []
         if jamais_service:
             justifications.append(f"N'a jamais beneficie de « {activitee.service} »")
+        elif rotation and au_minimum:
+            justifications.append(
+                f"Tour {minimum + 1} : au minimum d'attributions ({minimum}) pour ce service"
+            )
         if emp.nb_aides == 0:
             justifications.append("Aucune aide sociale recue a ce jour")
         elif nb_aides[i] <= 0.25:
@@ -153,7 +167,13 @@ def scorer_beneficiaires(activitee: Activitee, annee: int | None = None, limite:
         if enfants[i] >= 0.6:
             justifications.append(f"Charge familiale ({emp.nb_enfants} enfants)")
         if not eligible:
-            justifications.append("Deja servi pour ce service : non eligible")
+            if rotation:
+                justifications.append(
+                    f"Deja parti {emp.deja_ce_service} fois : doit attendre que tout le "
+                    f"personnel ait ete servi autant"
+                )
+            else:
+                justifications.append("Deja servi pour ce service : non eligible")
 
         resultats.append(
             {
@@ -975,14 +995,14 @@ def repondre(question: str, contexte: dict | None = None, utiliser_llm: bool = T
                 "service": a.service,
                 "montantSC": a.montantSC,
                 "budget_alloue": a.budget_alloue,
-                "renouvelable": "Non" if a.unique_par_employe else "Oui",
+                "regle": a.get_regle_attribution_display(),
             }
             for a in Activitee.objects.all()
         ]
         return _rep(
             "liste",
             f"{len(lignes)} actions sociales sont proposees.",
-            ["service", "montantSC", "budget_alloue", "renouvelable"],
+            ["service", "montantSC", "budget_alloue", "regle"],
             lignes,
             nouveau_contexte,
         )

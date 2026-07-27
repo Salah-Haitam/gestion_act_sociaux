@@ -30,11 +30,11 @@ class PersonnelFilter(df.FilterSet):
 
 class ActiviteeFilter(df.FilterSet):
     service = df.CharFilter(field_name="service", lookup_expr="icontains")
-    unique_par_employe = df.BooleanFilter()
+    regle_attribution = df.CharFilter(field_name="regle_attribution", lookup_expr="iexact")
 
     class Meta:
         model = Activitee
-        fields = ["service", "unique_par_employe"]
+        fields = ["service", "regle_attribution"]
 
 
 class TransactionFilter(df.FilterSet):

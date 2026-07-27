@@ -18,6 +18,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from . import ai, exports
 from .filters import ActiviteeFilter, PersonnelFilter, TransactionFilter
 from .models import Activitee, Personnel, Transaction
+from .regles import etat_attribution
 from .serializers import (
     ActiviteeSerializer,
     PersonnelSerializer,
@@ -408,54 +409,18 @@ class TransactionViewSet(viewsets.ModelViewSet):
                 {"detail": "Employe ou activite introuvable."}, status=status.HTTP_404_NOT_FOUND
             )
 
-        historique = Transaction.objects.filter(matricule=employe, id_activitee=activitee)
-        cette_annee = historique.filter(annee=annee)
-
-        if activitee.unique_par_employe and historique.exists():
-            precedente = historique.first()
-            return Response(
-                {
-                    "doublon": True,
-                    "bloquant": True,
-                    "message": (
-                        f"{employe.nom} {employe.prenom} a deja beneficie du service "
-                        f"« {activitee.service} » en {precedente.annee}. "
-                        f"Ce service n'est pas renouvelable."
-                    ),
-                    "historique": TransactionSerializer(historique, many=True).data,
-                }
-            )
-        if cette_annee.exists():
-            return Response(
-                {
-                    "doublon": True,
-                    "bloquant": True,
-                    "message": (
-                        f"{employe.nom} {employe.prenom} a deja beneficie du service "
-                        f"« {activitee.service} » en {annee}."
-                    ),
-                    "historique": TransactionSerializer(cette_annee, many=True).data,
-                }
-            )
-        if historique.exists():
-            annees = ", ".join(str(t.annee) for t in historique)
-            return Response(
-                {
-                    "doublon": False,
-                    "bloquant": False,
-                    "message": (
-                        f"Attention : {employe.nom} {employe.prenom} a deja beneficie de ce "
-                        f"service les annees precedentes ({annees})."
-                    ),
-                    "historique": TransactionSerializer(historique, many=True).data,
-                }
-            )
+        etat = etat_attribution(employe, activitee, annee=int(annee))
         return Response(
             {
-                "doublon": False,
-                "bloquant": False,
-                "message": f"{employe.nom} {employe.prenom} n'a jamais beneficie de ce service.",
-                "historique": [],
+                "doublon": not etat["autorise"],
+                "bloquant": not etat["autorise"],
+                "avertissement": etat["avertissement"],
+                "message": etat["message"],
+                "regle": etat["regle"],
+                "regle_libelle": etat["regle_libelle"],
+                "nb_attributions": etat["nb_attributions"],
+                "tour": etat["tour"],
+                "historique": TransactionSerializer(etat["historique"], many=True).data,
             }
         )
 
