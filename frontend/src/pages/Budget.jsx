@@ -145,7 +145,10 @@ export default function Budget() {
               titre: "Consommation",
               rendu: (l) => (
                 <div className="barre-score">
-                  <div className={`jauge ${statutBudget(l.taux_consommation)}`} style={{ flex: 1 }}>
+                  <div
+                    className={`jauge ${statutBudget(l.taux_consommation, budget.seuil_alerte)}`}
+                    style={{ flex: 1 }}
+                  >
                     <span style={{ width: `${Math.min(l.taux_consommation ?? 0, 100)}%` }} />
                   </div>
                   <span className="chiffre">

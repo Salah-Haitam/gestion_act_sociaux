@@ -183,10 +183,18 @@ export function Pagination({ page, setPage, total, taille = 25 }) {
 }
 
 /** Etat d'un budget -> classe de statut (palette de statut reservee). */
-export function statutBudget(taux) {
+/**
+ * Classe de statut d'une jauge budgetaire.
+ *
+ * Le seuil est celui choisi par l'administrateur : la couleur de la jauge doit
+ * suivre le meme reglage que le badge de statut, sinon les deux se
+ * contredisent. « Serieux » correspond a la moitie du chemin entre le seuil et
+ * l'epuisement, ce qui redonne 80 / 90 / 100 avec le seuil par defaut.
+ */
+export function statutBudget(taux, seuil = 80) {
   if (taux === null || taux === undefined) return "";
   if (taux >= 100) return "critique";
-  if (taux >= 90) return "serieux";
-  if (taux >= 80) return "attention";
+  if (taux >= seuil + (100 - seuil) / 2) return "serieux";
+  if (taux >= seuil) return "attention";
   return "";
 }
