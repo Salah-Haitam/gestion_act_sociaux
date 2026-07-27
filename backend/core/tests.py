@@ -4,6 +4,7 @@ Tests automatises de l'API.
     python manage.py test core
 """
 
+import io
 from datetime import date
 from decimal import Decimal
 from unittest.mock import patch
@@ -412,6 +413,28 @@ class ExportTest(BaseAPITest):
     def test_rapport_annuel(self):
         reponse = self.client.get("/api/stats/rapport-annuel/?annee=2024&format=excel")
         self.assertEqual(reponse.status_code, status.HTTP_200_OK)
+
+    def test_le_logo_est_embarque_dans_les_pdf(self):
+        from . import exports
+
+        self.assertIsNotNone(exports._logo(), "le logo institutionnel doit etre trouve")
+        avec = self.client.get(f"/api/transactions/{self.transaction.pk}/attestation/")
+        self.assertGreater(len(avec.content), 20_000, "l'image doit alourdir le PDF")
+
+    def test_pdf_genere_sans_logo(self):
+        """L'absence du fichier image ne doit jamais empecher l'edition."""
+        with override_settings(LOGO_ENTREPRISE="/chemin/inexistant/logo.png"):
+            reponse = self.client.get(f"/api/transactions/{self.transaction.pk}/attestation/")
+        self.assertEqual(reponse["Content-Type"], "application/pdf")
+        self.assertGreater(len(reponse.content), 1000)
+
+    def test_le_nom_de_la_plateforme_figure_dans_les_exports(self):
+        from openpyxl import load_workbook
+
+        reponse = self.client.get("/api/personnel/export/?format=excel")
+        classeur = load_workbook(io.BytesIO(reponse.content))
+        entete = " ".join(str(c.value or "") for c in classeur.active[2])
+        self.assertIn("MarsaSocial", entete)
 
 
 class IATest(BaseAPITest):

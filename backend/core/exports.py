@@ -5,7 +5,11 @@ from __future__ import annotations
 import io
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 
+from PIL import Image as PILImage
+
+from django.conf import settings
 from django.http import HttpResponse
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
@@ -14,14 +18,34 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
-ENTREPRISE = "MARSA MAROC"
-SOUS_TITRE = "Direction des Ressources Humaines - Actions Sociales"
+ENTREPRISE = settings.ENTREPRISE
+PLATEFORME = settings.NOM_PLATEFORME
+SOUS_TITRE = settings.DIRECTION
 
 BLEU = "1F4E79"
 BLEU_RL = colors.HexColor("#1F4E79")
 GRIS_RL = colors.HexColor("#F2F5F9")
+
+
+def _logo(largeur_cm: float = 3.4):
+    """
+    Logo institutionnel pour l'en-tete des PDF.
+
+    Renvoie None si le fichier est absent : un document doit pouvoir etre
+    genere meme sans image, la mise en page s'adapte.
+    """
+    chemin = getattr(settings, "LOGO_ENTREPRISE", None)
+    if not chemin or not Path(chemin).exists():
+        return None
+    try:
+        with PILImage.open(chemin) as source:
+            ratio = source.height / source.width
+        largeur = largeur_cm * cm
+        return Image(str(chemin), width=largeur, height=largeur * ratio)
+    except Exception:
+        return None
 
 
 def _texte(valeur) -> str:
@@ -45,7 +69,7 @@ def export_excel(titre: str, colonnes: list[str], lignes: list[dict], nom_fichie
     ws.title = titre[:31] or "Export"
 
     ws.append([f"{ENTREPRISE} - {titre}"])
-    ws.append([f"{SOUS_TITRE} - edite le {date.today():%d/%m/%Y}"])
+    ws.append([f"{SOUS_TITRE} - edite depuis {PLATEFORME} le {date.today():%d/%m/%Y}"])
     ws.append([])
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=max(len(colonnes), 1))
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=max(len(colonnes), 1))
@@ -110,11 +134,28 @@ def export_pdf(titre: str, colonnes: list[str], lignes: list[dict], nom_fichier:
     style_sous = ParagraphStyle("sous", parent=styles["Normal"], fontSize=9, textColor=colors.grey)
     style_cell = ParagraphStyle("cell", parent=styles["Normal"], fontSize=7.5, leading=9)
 
-    elements = [
+    # En-tete : logo a gauche, intitules a droite, dans un tableau invisible.
+    bloc_titres = [
         Paragraph(f"{ENTREPRISE} — {titre}", style_titre),
         Paragraph(f"{SOUS_TITRE} — edite le {date.today():%d/%m/%Y}", style_sous),
-        Spacer(1, 0.5 * cm),
+        Paragraph(f"Edite depuis {PLATEFORME}", style_sous),
     ]
+    logo = _logo(3.2)
+    if logo:
+        entete = Table([[logo, bloc_titres]], colWidths=[3.6 * cm, doc.width - 3.6 * cm])
+        entete.setStyle(
+            TableStyle(
+                [
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                    ("RIGHTPADDING", (0, 0), (0, 0), 12),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+                ]
+            )
+        )
+        elements = [entete, Spacer(1, 0.5 * cm)]
+    else:
+        elements = bloc_titres + [Spacer(1, 0.5 * cm)]
 
     if lignes:
         entetes = [
@@ -171,7 +212,12 @@ def attestation_pdf(transaction) -> HttpResponse:
     droite = ParagraphStyle("d", parent=corps, alignment=2)
 
     employe = transaction.matricule
-    elements = [
+    logo = _logo(4.2)
+    elements = []
+    if logo:
+        logo.hAlign = "CENTER"
+        elements += [logo, Spacer(1, 0.5 * cm)]
+    elements += [
         Paragraph(ENTREPRISE, titre),
         Paragraph(SOUS_TITRE, ParagraphStyle("s", parent=styles["Normal"], alignment=1, textColor=colors.grey)),
         Spacer(1, 1.2 * cm),

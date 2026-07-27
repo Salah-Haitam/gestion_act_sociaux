@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Architecture — Plateforme de Gestion des Actions Sociales · Marsa Maroc</title>
+<title>Architecture — MarsaSocial · Marsa Maroc</title>
 <style>
 :root{
   color-scheme: light;
@@ -66,7 +66,14 @@ main{flex:1;min-width:0;padding:0 34px 80px}
 
 .bandeau{background:linear-gradient(135deg,var(--marine) 0%,#10467f 58%,var(--accent) 130%);
          color:#fff;margin:0 -34px 30px;padding:44px 34px 38px}
-.bandeau h1{font-size:29px;color:#fff}
+.bandeau h1{font-size:29px;color:#fff;line-height:1.1}
+.bandeau-marque{display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.bandeau-marque > img:first-child{width:62px;height:62px;background:#fff;border-radius:13px;padding:4px;flex-shrink:0}
+.bandeau-sous{font-size:14px;opacity:.9;margin-top:2px}
+.bandeau-entreprise{height:38px;width:auto;margin-left:auto;background:#fff;border-radius:8px;padding:5px 9px}
+.marque-sommaire{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.marque-sommaire img{width:36px;height:36px;flex-shrink:0}
+.marque-sommaire .sous{margin-bottom:0}
 .bandeau .accroche{font-size:15.5px;opacity:.92;margin:10px 0 0;max-width:70ch}
 .bandeau .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
 .bandeau .meta span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);
@@ -184,8 +191,13 @@ td code{white-space:nowrap}
 <div class="enveloppe">
 
 <nav class="sommaire">
-  <div class="titre-doc">Architecture</div>
-  <div class="sous">Actions sociales · Marsa Maroc</div>
+  <div class="marque-sommaire">
+    <img src="frontend/public/logo-marsasocial.png" alt="">
+    <div>
+      <div class="titre-doc">MarsaSocial</div>
+      <div class="sous">Architecture technique</div>
+    </div>
+  </div>
   <a href="#vue"><span class="num">1</span>Vue d'ensemble</a>
   <a href="#archi"><span class="num">2</span>Architecture générale</a>
   <a href="#donnees"><span class="num">3</span>Modèle de données</a>
@@ -202,7 +214,14 @@ td code{white-space:nowrap}
 <main>
 
 <header class="bandeau">
-  <h1>Plateforme de Gestion des Actions Sociales</h1>
+  <div class="bandeau-marque">
+    <img src="frontend/public/logo-marsasocial.png" alt="">
+    <div>
+      <h1>MarsaSocial</h1>
+      <div class="bandeau-sous">Plateforme de gestion des actions sociales</div>
+    </div>
+    <img src="frontend/public/logo-marsa-maroc.png" alt="Marsa Maroc" class="bandeau-entreprise">
+  </div>
   <p class="accroche">
     Application web permettant à l'administrateur RH de Marsa Maroc de gérer les prestations
     sociales du personnel, avec un objectif central : <strong>garantir l'équité de distribution</strong>

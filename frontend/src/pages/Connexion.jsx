@@ -34,10 +34,16 @@ export default function Connexion() {
   return (
     <div className="ecran-connexion">
       <form className="boite-connexion" onSubmit={soumettre}>
-        <div className="logo">MM</div>
-        <h1>Espace administrateur</h1>
-        <p className="muet petit" style={{ marginTop: 4, marginBottom: 22 }}>
-          Plateforme de gestion des actions sociales — Marsa Maroc
+        <div className="marque-connexion">
+          <img src="/logo-marsasocial.png" alt="" />
+          <div>
+            <h1>MarsaSocial</h1>
+            <p className="muet petit">Gestion des actions sociales</p>
+          </div>
+        </div>
+        <h2 style={{ marginBottom: 4 }}>Espace administrateur</h2>
+        <p className="muet petit" style={{ marginTop: 0, marginBottom: 22 }}>
+          Connexion reservee a la Direction des Ressources Humaines.
         </p>
 
         {erreur && <Message type="erreur">{erreur}</Message>}
@@ -71,6 +77,10 @@ export default function Connexion() {
 
         <div className="indice">
           Compte de demonstration : <strong>admin</strong> / <strong>admin123</strong>
+        </div>
+
+        <div className="signature">
+          <img src="/logo-marsa-maroc.png" alt="Marsa Maroc" />
         </div>
       </form>
     </div>

@@ -75,10 +75,24 @@ a:hover { text-decoration: underline; }
 }
 
 .laterale .marque {
-  padding: 20px 18px;
+  padding: 18px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 11px;
 }
-.laterale .marque strong { display: block; font-size: 15px; letter-spacing: 0.02em; }
+/* L'embleme est bleu marine : sur le fond marine il disparait. Une pastille
+   blanche lui redonne du contraste et le fait lire comme une icone d'appli. */
+.laterale .marque .embleme {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 9px;
+  padding: 3px;
+  object-fit: contain;
+}
+.laterale .marque strong { display: block; font-size: 16px; letter-spacing: 0.01em; }
 .laterale .marque span { font-size: 11px; color: rgba(255, 255, 255, 0.62); }
 
 .laterale nav { padding: 10px 10px 20px; flex: 1; }
@@ -124,6 +138,9 @@ a:hover { text-decoration: underline; }
   z-index: 20;
 }
 .entete p { margin: 2px 0 0; color: var(--encre-2); font-size: 13px; }
+/* Logo institutionnel : sur fond blanc, il garde ses couleurs d'origine. */
+.logo-entete { height: 30px; width: auto; }
+@media (max-width: 700px) { .logo-entete { display: none; } }
 
 .page { padding: 22px 26px 40px; }
 
@@ -384,17 +401,25 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   max-width: 400px;
   box-shadow: 0 22px 60px rgba(11, 11, 11, 0.3);
 }
-.boite-connexion .logo {
-  width: 46px; height: 46px;
-  border-radius: 11px;
-  background: var(--marine);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 17px;
-  margin-bottom: 16px;
+.marque-connexion {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
 }
+.marque-connexion img { width: 58px; height: 58px; object-fit: contain; flex-shrink: 0; }
+.marque-connexion h1 { font-size: 25px; color: var(--marine); letter-spacing: -0.02em; }
+.marque-connexion p { margin: 1px 0 0; }
+
+/* Signature institutionnelle en pied de la boite de connexion. */
+.boite-connexion .signature {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bordure);
+  display: flex;
+  justify-content: center;
+}
+.boite-connexion .signature img { height: 34px; width: auto; opacity: 0.85; }
 .boite-connexion .indice {
   margin-top: 18px;
   padding: 10px 12px;

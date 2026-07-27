@@ -132,6 +132,15 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # --- Metier ----------------------------------------------------------------
+# Nom de la plateforme et entite emettrice, repris dans les exports et les PDF.
+NOM_PLATEFORME = "MarsaSocial"
+ENTREPRISE = "MARSA MAROC"
+DIRECTION = "Direction des Ressources Humaines - Actions Sociales"
+
+# Logo institutionnel appose sur les documents PDF. Absent = documents sans
+# logo, sans erreur : la generation ne doit jamais dependre d'un fichier image.
+LOGO_ENTREPRISE = BASE_DIR.parent / "logo" / "logo_marsa.png"
+
 # Seuil (en %) de consommation du budget a partir duquel une alerte est levee.
 BUDGET_ALERT_THRESHOLD = 80
 

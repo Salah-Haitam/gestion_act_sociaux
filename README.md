@@ -1,6 +1,17 @@
-# Plateforme de Gestion des Actions Sociales — Marsa Maroc
+<p align="center">
+  <img src="frontend/public/logo-marsasocial.png" alt="MarsaSocial" width="130">
+</p>
 
-Projet PFA — application web permettant à l'administrateur RH de gérer et suivre les actions
+<h1 align="center">MarsaSocial</h1>
+
+<p align="center">
+  <strong>Plateforme de gestion des actions sociales — Marsa Maroc</strong><br>
+  <em>Projet PFA — 4<sup>e</sup> année EMSI</em>
+</p>
+
+---
+
+Application web permettant à l'administrateur RH de gérer et suivre les actions
 sociales attribuées au personnel de Marsa Maroc.
 
 **Objectif central : garantir l'équité de distribution** en identifiant qui a déjà bénéficié d'un

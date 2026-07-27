@@ -37,8 +37,11 @@ export default function Layout() {
     <div className="app">
       <aside className="laterale">
         <div className="marque">
-          <strong>MARSA MAROC</strong>
-          <span>Actions sociales — Espace RH</span>
+          <img src="/logo-marsasocial.png" alt="" className="embleme" />
+          <div>
+            <strong>MarsaSocial</strong>
+            <span>Actions sociales — Espace RH</span>
+          </div>
         </div>
         <nav>
           {MENU.map((section) => (
@@ -71,9 +74,12 @@ export default function Layout() {
             <h1>Gestion des actions sociales</h1>
             <p>Suivi des prestations sociales du personnel et de leur equite de distribution.</p>
           </div>
-          <button className="secondaire" onClick={deconnexion}>
-            Deconnexion
-          </button>
+          <div className="actions" style={{ alignItems: "center" }}>
+            <img src="/logo-marsa-maroc.png" alt="Marsa Maroc" className="logo-entete" />
+            <button className="secondaire" onClick={deconnexion}>
+              Deconnexion
+            </button>
+          </div>
         </header>
         <main className="page">
           <Outlet />
