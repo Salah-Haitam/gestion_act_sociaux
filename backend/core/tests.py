@@ -196,6 +196,90 @@ class DoublonTest(BaseAPITest):
         self.assertIn("jamais beneficie", reponse.data["message"])
 
 
+@override_settings(LLM_ACTIF=False)
+class AdminDjangoTest(APITestCase):
+    """
+    L'admin Django n'emprunte pas les serializers DRF : les regles metier
+    doivent donc vivre dans le modele, sinon cette interface les contourne.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        get_user_model().objects.create_superuser("admin", "rh@marsamaroc.ma", "motdepasse")
+        cls.scolaire = Activitee.objects.create(
+            service="Aide scolaire", montantSC=Decimal("2500"),
+            regle_attribution=Activitee.ANNUELLE,
+        )
+        cls.hajj = Activitee.objects.create(
+            service="Pelerinage Hajj", montantSC=Decimal("25000"),
+            regle_attribution=Activitee.ROTATION,
+        )
+        cls.employe = Personnel.objects.create(
+            matricule="MM0001", nom="Alaoui", prenom="Youssef", sexe="H",
+            departement="Maintenance", date_recrutement=date(2005, 3, 1), nb_enfants=3,
+        )
+        cls.autre = Personnel.objects.create(
+            matricule="MM0002", nom="Bennani", prenom="Salma", sexe="F",
+            departement="Finance", date_recrutement=date(2010, 9, 15),
+        )
+
+    def setUp(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+    def _ajouter(self, activitee, jour, annee):
+        return self.client.post(
+            "/admin/core/transaction/add/",
+            {
+                "matricule": self.employe.pk,
+                "id_activitee": activitee.pk,
+                "montantTR": "2500.00",
+                "duree": 0,
+                "date_transaction": jour,
+                "annee": annee,
+            },
+            follow=True,
+        )
+
+    def test_les_pages_repondent(self):
+        for chemin in (
+            "/admin/",
+            "/admin/core/personnel/",
+            "/admin/core/activitee/",
+            "/admin/core/transaction/",
+        ):
+            self.assertEqual(self.client.get(chemin).status_code, 200, chemin)
+
+    def test_acces_refuse_sans_authentification(self):
+        self.client.logout()
+        reponse = self.client.get("/admin/core/personnel/")
+        self.assertEqual(reponse.status_code, 302)
+        self.assertIn("/admin/login/", reponse["Location"])
+
+    def test_le_doublon_annuel_est_refuse(self):
+        self._ajouter(self.scolaire, "2024-09-01", 2024)
+        self.assertEqual(Transaction.objects.count(), 1)
+        reponse = self._ajouter(self.scolaire, "2024-11-02", 2024)
+        self.assertEqual(Transaction.objects.count(), 1, "l'admin a contourne la regle")
+        self.assertContains(reponse, "deja beneficie")
+
+    def test_la_rotation_est_respectee(self):
+        self._ajouter(self.hajj, "2024-05-01", 2024)
+        self.assertEqual(Transaction.objects.count(), 1)
+        # Un collegue n'est jamais parti : pas de second depart.
+        reponse = self._ajouter(self.hajj, "2026-05-01", 2026)
+        self.assertEqual(Transaction.objects.count(), 1)
+        self.assertContains(reponse, "en attente")
+
+    def test_annee_incoherente_refusee(self):
+        reponse = self._ajouter(self.scolaire, "2024-09-01", 2020)
+        self.assertEqual(Transaction.objects.count(), 0)
+        self.assertContains(reponse, "ne correspond pas")
+
+    def test_attribution_valide_acceptee(self):
+        self._ajouter(self.scolaire, "2024-09-01", 2024)
+        self.assertEqual(Transaction.objects.count(), 1)
+
+
 class RotationTest(BaseAPITest):
     """
     Rotation equitable (Hajj) : un employe ne peut repartir que lorsque tout le

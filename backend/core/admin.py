@@ -1,6 +1,19 @@
+"""
+Interface d'administration Django.
+
+Elle sert de porte de secours technique (correction de donnees, gestion des
+comptes), l'interface metier etant l'application React. Les regles
+d'attribution y sont appliquees : elles sont portees par `Transaction.clean()`,
+que les formulaires Django appellent, et non par les serializers DRF.
+"""
+
 from django.contrib import admin
 
 from .models import Activitee, Personnel, Transaction
+
+admin.site.site_header = "MarsaSocial — administration technique"
+admin.site.site_title = "MarsaSocial"
+admin.site.index_title = "Donnees et comptes"
 
 
 @admin.register(Personnel)

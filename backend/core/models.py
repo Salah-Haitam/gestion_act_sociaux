@@ -178,6 +178,33 @@ class Transaction(models.Model):
     def __str__(self):
         return f"#{self.id_transaction} {self.matricule_id} / {self.id_activitee_id} ({self.annee})"
 
+    def clean(self):
+        """
+        Validation metier au niveau du modele.
+
+        Placee ici, elle s'applique a TOUT formulaire Django, l'admin compris.
+        Le serializer DRF appelle les memes fonctions de `core.regles` : la
+        regle est donc unique, mais verifiee sur les deux chemins d'ecriture.
+        """
+        from django.core.exceptions import ValidationError
+
+        from .regles import controler_attribution
+
+        if self.date_transaction and not self.annee:
+            self.annee = self.date_transaction.year
+        if self.date_transaction and self.annee and self.annee != self.date_transaction.year:
+            raise ValidationError(
+                {"annee": f"L'annee ({self.annee}) ne correspond pas a la date "
+                          f"({self.date_transaction.year})."}
+            )
+
+        if self.matricule_id and self.id_activitee_id:
+            message = controler_attribution(
+                self.matricule, self.id_activitee, self.annee, exclure=self.pk
+            )
+            if message:
+                raise ValidationError(message)
+
     def save(self, *args, **kwargs):
         # L'annee reste toujours coherente avec la date de la transaction.
         if self.date_transaction and not self.annee:

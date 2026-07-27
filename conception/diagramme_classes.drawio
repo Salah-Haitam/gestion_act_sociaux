@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
   <diagram id="d75" name="Diagramme de classes">
-    <mxGraphModel dx="1600" dy="1151" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1680" pageHeight="943" math="0" shadow="0">
+    <mxGraphModel dx="1043" dy="750" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1680" pageHeight="943" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -14,7 +14,7 @@
           <mxGeometry height="24" width="400" x="40" y="120" as="geometry" />
         </mxCell>
         <mxCell id="cPersonnel" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;fillColor=#2a78d6;strokeColor=#2a78d6;fontColor=#ffffff;swimlaneFillColor=#ffffff;fontSize=13;" value="Personnel" vertex="1">
-          <mxGeometry height="258" width="290" x="40" y="133" as="geometry" />
+          <mxGeometry height="258" width="290" x="40" y="144" as="geometry" />
         </mxCell>
         <mxCell id="n4" parent="cPersonnel" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="+ matricule : CharField(20) &amp;laquo;PK&amp;raquo;" vertex="1">
           <mxGeometry height="22" width="290" y="30" as="geometry" />
@@ -171,29 +171,8 @@
         <mxCell id="e48" edge="1" parent="1" source="eSexe" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#4a3aa7;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="cPersonnel" value="&amp;laquo;utilise&amp;raquo;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="n49" parent="1" style="text;html=1;align=left;fontSize=13;fontStyle=1;fontColor=#0d366b;" value="Couche metier (sans etat, non persistante)" vertex="1">
-          <mxGeometry height="24" width="269" x="40" y="603" as="geometry" />
-        </mxCell>
-        <mxCell id="cRegles" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=46;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;fillColor=#1baf7a;strokeColor=#1baf7a;fontColor=#ffffff;swimlaneFillColor=#ffffff;fontSize=13;" value="&amp;laquo;service&amp;raquo;&lt;br&gt;&lt;b&gt;Regles&lt;/b&gt;" vertex="1">
-          <mxGeometry height="142" width="320" x="40" y="638" as="geometry" />
-        </mxCell>
-        <mxCell id="n50" parent="cRegles" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="&amp;laquo;module core.regles&amp;raquo;" vertex="1">
-          <mxGeometry height="22" width="320" y="46" as="geometry" />
-        </mxCell>
-        <mxCell id="n51" parent="cRegles" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#1baf7a;" value="" vertex="1">
-          <mxGeometry height="8" width="320" y="68" as="geometry" />
-        </mxCell>
-        <mxCell id="n52" parent="cRegles" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="+ etat_attribution(p, a, annee) : dict" vertex="1">
-          <mxGeometry height="22" width="320" y="76" as="geometry" />
-        </mxCell>
-        <mxCell id="n53" parent="cRegles" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="+ controler_attribution(...) : str|None" vertex="1">
-          <mxGeometry height="22" width="320" y="98" as="geometry" />
-        </mxCell>
-        <mxCell id="n54" parent="cRegles" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="- attributions_par_employe(a) : QuerySet" vertex="1">
-          <mxGeometry height="22" width="320" y="120" as="geometry" />
-        </mxCell>
         <mxCell id="cIA" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=46;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;fillColor=#eb6834;strokeColor=#eb6834;fontColor=#ffffff;swimlaneFillColor=#ffffff;fontSize=13;" value="&amp;laquo;service&amp;raquo;&lt;br&gt;&lt;b&gt;MoteurIA&lt;/b&gt;" vertex="1">
-          <mxGeometry height="164" width="320" x="445" y="773" as="geometry" />
+          <mxGeometry height="164" width="320" x="359" y="532" as="geometry" />
         </mxCell>
         <mxCell id="n55" parent="cIA" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="&amp;laquo;module core.ai&amp;raquo;" vertex="1">
           <mxGeometry height="22" width="320" y="46" as="geometry" />
@@ -214,7 +193,7 @@
           <mxGeometry height="22" width="320" y="142" as="geometry" />
         </mxCell>
         <mxCell id="cLLM" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=46;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;fillColor=#eb6834;strokeColor=#eb6834;fontColor=#ffffff;swimlaneFillColor=#ffffff;fontSize=13;" value="&amp;laquo;service&amp;raquo;&lt;br&gt;&lt;b&gt;RenfortLLM&lt;/b&gt;" vertex="1">
-          <mxGeometry height="142" width="300" x="860" y="638" as="geometry" />
+          <mxGeometry height="142" width="300" x="801" y="598" as="geometry" />
         </mxCell>
         <mxCell id="n61" parent="cLLM" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="&amp;laquo;module core.llm&amp;raquo;" vertex="1">
           <mxGeometry height="22" width="300" y="46" as="geometry" />
@@ -248,9 +227,6 @@
         </mxCell>
         <mxCell id="n70" parent="cExports" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="+ attestation_pdf(tr) : HttpResponse" vertex="1">
           <mxGeometry height="22" width="300" y="120" as="geometry" />
-        </mxCell>
-        <mxCell id="e71" edge="1" parent="1" source="cRegles" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#52514e;" target="cTransaction" value="&amp;laquo;lit&amp;raquo;">
-          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e72" edge="1" parent="1" source="cIA" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#52514e;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;verticalAlign=bottom;" target="cLLM" value="&amp;laquo;delegue&amp;raquo;">
           <mxGeometry relative="1" as="geometry" />

@@ -425,8 +425,12 @@ gestion_sociaux/
 
 ## Notes de conception
 
-- **La règle anti-doublon vit dans le serializer**, donc elle s'applique à toute écriture, quelle
-  qu'en soit l'origine (front, admin Django, appel direct de l'API).
+- **Les règles d'attribution sont définies une seule fois** dans
+  [`regles.py`](backend/core/regles.py), mais **vérifiées sur les deux chemins d'écriture** :
+  `TransactionSerializer.validate()` pour l'API REST, et `Transaction.clean()` pour tout
+  formulaire Django, l'admin compris. Les deux chemins sont indispensables : l'admin Django
+  n'emprunte pas les serializers DRF, et une règle placée uniquement dans le serializer y serait
+  silencieusement contournée.
 - **Le champ `annee` est déduit de `date_transaction`** et une incohérence entre les deux est
   refusée : les statistiques annuelles restent fiables.
 - **La palette des graphiques est validée pour les daltonismes** (deutan / protan / tritan) : chaque

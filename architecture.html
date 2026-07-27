@@ -481,7 +481,7 @@ backend/
       <p style="margin:0">
         Traduit JSON ⇄ objets Python, expose les champs calculés, et surtout <strong>valide les règles
         métier</strong>. La méthode <code>validate()</code> refuse un doublon ou une année incohérente.
-        Placée ici, la règle s'applique à toute écriture, quelle qu'en soit l'origine.
+        Il refuse un doublon ou une année incohérente sur le chemin de l'API REST.
       </p>
     </div>
     <div class="carte">
@@ -504,10 +504,19 @@ backend/
 
   <div class="note cle">
     <span class="chapo">Principe directeur : la règle métier vit au plus près des données</span>
-    La validation anti-doublon est dans le <em>serializer</em>, pas dans le composant React. Le
-    front affiche une alerte pour le confort de l'utilisateur, mais s'il était contourné —
-    appel direct à l'API, admin Django, script — le serveur refuserait quand même. L'interface
-    prévient ; le serveur garantit.
+    La validation n'est pas dans le composant React : le front affiche une alerte pour le confort
+    de l'utilisateur, mais c'est le serveur qui garantit. L'interface prévient ; le serveur refuse.
+  </div>
+
+  <div class="note garde">
+    <span class="chapo">Deux chemins d'écriture, donc deux points de contrôle</span>
+    Les règles sont définies une seule fois dans <code>core/regles.py</code>, mais appelées à
+    <strong>deux endroits</strong> : <code>TransactionSerializer.validate()</code> pour l'API REST,
+    et <code>Transaction.clean()</code> pour tout formulaire Django.
+    <br><br>
+    C'est indispensable : <strong>l'admin Django n'emprunte pas les serializers DRF</strong>. Une
+    règle placée uniquement dans le serializer y serait silencieusement contournée — le défaut
+    existait, un test le couvre désormais.
   </div>
 
   <h3>Performance</h3>
