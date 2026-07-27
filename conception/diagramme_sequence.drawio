@@ -1,0 +1,403 @@
+<mxfile host="app.diagrams.net" agent="MarsaSocial" type="device">
+  <diagram id="d132" name="Sequence — Attribution">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1760" pageHeight="1160" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n108" value="Sequence — Attribuer un service (controle des regles)" style="text;html=1;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#0d366b;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="760" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="n109" value="Le controle s'exerce deux fois : en direct pendant la saisie pour prevenir l'administrateur, puis a l'enregistrement pour garantir la regle. La seconde barriere ne peut pas etre contournee." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="40" y="66" width="1000" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="lAdmin" value="Administrateur RH" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#0d366b;strokeColor=#0d366b;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="60" y="130" width="170" height="940" as="geometry" />
+        </mxCell>
+        <mxCell id="lUI" value="Interface React&lt;br&gt;(Transactions)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#2a78d6;strokeColor=#2a78d6;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="290" y="130" width="170" height="940" as="geometry" />
+        </mxCell>
+        <mxCell id="lAPI" value="API REST&lt;br&gt;(TransactionViewSet)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#2a78d6;strokeColor=#2a78d6;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="520" y="130" width="170" height="940" as="geometry" />
+        </mxCell>
+        <mxCell id="lSer" value="TransactionSerializer" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#1baf7a;strokeColor=#1baf7a;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="750" y="130" width="170" height="940" as="geometry" />
+        </mxCell>
+        <mxCell id="lReg" value="core.regles" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#1baf7a;strokeColor=#1baf7a;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="980" y="130" width="170" height="940" as="geometry" />
+        </mxCell>
+        <mxCell id="lBD" value="Base SQLite" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#4a3aa7;strokeColor=#4a3aa7;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="130" width="170" height="940" as="geometry" />
+        </mxCell>
+        <mxCell id="m110" value="1 : saisit employe + service + date" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="145" y="210" as="sourcePoint" />
+            <mxPoint x="375" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m111" value="2 : GET /transactions/verifier-doublon/" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="255" as="sourcePoint" />
+            <mxPoint x="605" y="255" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m112" value="3 : etat_attribution(p, a, annee)" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="605" y="295" as="sourcePoint" />
+            <mxPoint x="1065" y="295" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m113" value="4 : compte les attributions" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1065" y="335" as="sourcePoint" />
+            <mxPoint x="1295" y="335" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m114" value="5 : minimum de l'effectif" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1295" y="375" as="sourcePoint" />
+            <mxPoint x="1065" y="375" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fAlt" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#eb6834;fontSize=11;fontStyle=1;fontColor=#eb6834;width=60;height=26;" vertex="1" parent="1">
+          <mxGeometry x="480" y="405" width="780" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="n115" value="[deja servi / hors tour]" style="text;html=1;align=left;fontSize=10;fontStyle=2;fontColor=#eb6834;" vertex="1" parent="1">
+          <mxGeometry x="500" y="432" width="220" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="m116" value="6 : refus + explication du tour" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1065" y="465" as="sourcePoint" />
+            <mxPoint x="605" y="465" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m117" value="7 : alerte bloquante" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="605" y="503" as="sourcePoint" />
+            <mxPoint x="375" y="503" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n118" value="[eligible]" style="text;html=1;align=left;fontSize=10;fontStyle=2;fontColor=#eb6834;" vertex="1" parent="1">
+          <mxGeometry x="500" y="531" width="220" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="m119" value="8 : autorise" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1065" y="566" as="sourcePoint" />
+            <mxPoint x="605" y="566" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m120" value="9 : message de confirmation" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="605" y="604" as="sourcePoint" />
+            <mxPoint x="375" y="604" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m121" value="10 : valide le formulaire" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="145" y="664" as="sourcePoint" />
+            <mxPoint x="375" y="664" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m122" value="11 : POST /transactions/" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="704" as="sourcePoint" />
+            <mxPoint x="605" y="704" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m123" value="12 : validate(attrs)" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="605" y="744" as="sourcePoint" />
+            <mxPoint x="835" y="744" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m124" value="13 : controler_attribution(...)" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="835" y="784" as="sourcePoint" />
+            <mxPoint x="1065" y="784" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m125" value="14 : None si autorise, sinon message" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1065" y="824" as="sourcePoint" />
+            <mxPoint x="835" y="824" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fAlt2" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#eb6834;fontSize=11;fontStyle=1;fontColor=#eb6834;width=60;height=26;" vertex="1" parent="1">
+          <mxGeometry x="480" y="854" width="780" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="n126" value="[regle violee]" style="text;html=1;align=left;fontSize=10;fontStyle=2;fontColor=#eb6834;" vertex="1" parent="1">
+          <mxGeometry x="500" y="881" width="220" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="m127" value="15 : ValidationError &amp;rarr; HTTP 400" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="835" y="921" as="sourcePoint" />
+            <mxPoint x="375" y="921" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n128" value="[conforme]" style="text;html=1;align=left;fontSize=10;fontStyle=2;fontColor=#eb6834;" vertex="1" parent="1">
+          <mxGeometry x="500" y="949" width="220" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="m129" value="16 : INSERT transaction" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="835" y="989" as="sourcePoint" />
+            <mxPoint x="1295" y="989" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m130" value="17 : HTTP 201 + transaction creee" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="605" y="1025" as="sourcePoint" />
+            <mxPoint x="375" y="1025" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n131" value="Pourquoi deux controles ?&lt;br&gt;&lt;br&gt;Le premier (messages 2-9) sert le confort : l'administrateur voit le probleme avant de saisir le montant.&lt;br&gt;&lt;br&gt;Le second (12-15) vit dans le serializer : il s'applique a TOUTE ecriture, y compris via l'admin Django ou un appel direct a l'API. C'est lui qui garantit la regle." style="shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;fillColor=#fff8e1;strokeColor=#fab219;fontSize=11;spacingLeft=6;spacingTop=2;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="260" width="300" height="210" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="d148" name="Sequence — Authentification">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1560" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n133" value="Sequence — Authentification JWT" style="text;html=1;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#0d366b;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="700" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="n134" value="Le serveur ne conserve aucun etat de session : le jeton porte l'identite. Son expiration est rattrapee automatiquement par un intercepteur." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="40" y="66" width="900" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="aAdmin2" value="Administrateur RH" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#0d366b;strokeColor=#0d366b;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="60" y="130" width="170" height="650" as="geometry" />
+        </mxCell>
+        <mxCell id="aUI" value="Ecran de connexion" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#2a78d6;strokeColor=#2a78d6;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="290" y="130" width="170" height="650" as="geometry" />
+        </mxCell>
+        <mxCell id="aAxios" value="Client Axios&lt;br&gt;(intercepteur)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#2a78d6;strokeColor=#2a78d6;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="520" y="130" width="170" height="650" as="geometry" />
+        </mxCell>
+        <mxCell id="aAPI" value="API /auth/" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#1baf7a;strokeColor=#1baf7a;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="750" y="130" width="170" height="650" as="geometry" />
+        </mxCell>
+        <mxCell id="aDjango" value="Django Auth" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#4a3aa7;strokeColor=#4a3aa7;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="980" y="130" width="170" height="650" as="geometry" />
+        </mxCell>
+        <mxCell id="m135" value="1 : identifiant + mot de passe" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="145" y="210" as="sourcePoint" />
+            <mxPoint x="375" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m136" value="2 : POST /auth/login/" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="250" as="sourcePoint" />
+            <mxPoint x="835" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m137" value="3 : verifie le hachage PBKDF2" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="835" y="290" as="sourcePoint" />
+            <mxPoint x="1065" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m138" value="4 : utilisateur valide" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1065" y="330" as="sourcePoint" />
+            <mxPoint x="835" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m139" value="5 : jeton acces (8 h) + rafraichissement (7 j)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="835" y="370" as="sourcePoint" />
+            <mxPoint x="375" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m140" value="6 : conserve les jetons" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=8;endArrow=block;rounded=0;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="415" as="sourcePoint" />
+            <mxPoint x="375" y="455" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="435" y="415" />
+              <mxPoint x="435" y="455" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m141" value="7 : requete metier" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="475" as="sourcePoint" />
+            <mxPoint x="605" y="475" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m142" value="8 : ajoute Authorization: Bearer" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=8;endArrow=block;rounded=0;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="605" y="515" as="sourcePoint" />
+            <mxPoint x="605" y="555" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="665" y="515" />
+              <mxPoint x="665" y="555" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fOpt" value="opt" style="shape=umlFrame;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#eb6834;fontSize=11;fontStyle=1;fontColor=#eb6834;width=60;height=26;" vertex="1" parent="1">
+          <mxGeometry x="480" y="560" width="620" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="n143" value="[jeton expire — HTTP 401]" style="text;html=1;align=left;fontSize=10;fontStyle=2;fontColor=#eb6834;" vertex="1" parent="1">
+          <mxGeometry x="500" y="587" width="260" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="m144" value="9 : POST /auth/refresh/" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="605" y="620" as="sourcePoint" />
+            <mxPoint x="835" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m145" value="10 : nouveau jeton d'acces" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="835" y="658" as="sourcePoint" />
+            <mxPoint x="605" y="658" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m146" value="11 : rejoue la requete" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=8;endArrow=block;rounded=0;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="605" y="696" as="sourcePoint" />
+            <mxPoint x="605" y="726" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="665" y="696" />
+              <mxPoint x="665" y="726" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n147" value="Si le rafraichissement echoue a son tour, les jetons sont effaces et l'utilisateur est redirige vers l'ecran de connexion. Aucune route de l'API n'est accessible sans jeton valide : la reponse est HTTP 401." style="shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;fillColor=#fff8e1;strokeColor=#fab219;fontSize=11;spacingLeft=6;spacingTop=2;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="300" width="300" height="130" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="d166" name="Sequence — Assistant IA">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2030" pageHeight="980" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n149" value="Sequence — Assistant en langage naturel (hybride)" style="text;html=1;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#0d366b;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="800" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="n150" value="Le modele de langage ne repond jamais a la question : il traduit la phrase en plan de requete. Les chiffres proviennent tous de l'ORM." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="40" y="66" width="950" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sAdmin" value="Administrateur RH" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#0d366b;strokeColor=#0d366b;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="60" y="130" width="170" height="740" as="geometry" />
+        </mxCell>
+        <mxCell id="sUI" value="Bulle assistant&lt;br&gt;(React)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#2a78d6;strokeColor=#2a78d6;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="290" y="130" width="170" height="740" as="geometry" />
+        </mxCell>
+        <mxCell id="sAPI" value="ChatbotView" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#2a78d6;strokeColor=#2a78d6;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="520" y="130" width="170" height="740" as="geometry" />
+        </mxCell>
+        <mxCell id="sAI" value="core.ai&lt;br&gt;(moteur a regles)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#1baf7a;strokeColor=#1baf7a;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="750" y="130" width="170" height="740" as="geometry" />
+        </mxCell>
+        <mxCell id="sLLM" value="core.llm" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#eb6834;strokeColor=#eb6834;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="980" y="130" width="170" height="740" as="geometry" />
+        </mxCell>
+        <mxCell id="sGroq" value="API Groq&lt;br&gt;(externe)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#eb6834;strokeColor=#eb6834;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="130" width="170" height="740" as="geometry" />
+        </mxCell>
+        <mxCell id="sBD" value="Base SQLite" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#4a3aa7;strokeColor=#4a3aa7;fontColor=#ffffff;fontStyle=1;fontSize=11;size=44;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="130" width="170" height="740" as="geometry" />
+        </mxCell>
+        <mxCell id="m151" value="1 : pose une question" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="145" y="210" as="sourcePoint" />
+            <mxPoint x="375" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m152" value="2 : POST /ia/chatbot/ {question, contexte}" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="250" as="sourcePoint" />
+            <mxPoint x="605" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m153" value="3 : repondre(question, contexte)" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="605" y="290" as="sourcePoint" />
+            <mxPoint x="835" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m154" value="4 : normalise, extrait les entites,&lt;br&gt;detecte l'intention" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=8;endArrow=block;rounded=0;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="835" y="332" as="sourcePoint" />
+            <mxPoint x="835" y="378" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="895" y="332" />
+              <mxPoint x="895" y="378" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fOpt2" value="opt" style="shape=umlFrame;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#eb6834;fontSize=11;fontStyle=1;fontColor=#eb6834;width=60;height=26;" vertex="1" parent="1">
+          <mxGeometry x="700" y="392" width="620" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="n155" value="[clef d'API configuree]" style="text;html=1;align=left;fontSize=10;fontStyle=2;fontColor=#eb6834;" vertex="1" parent="1">
+          <mxGeometry x="720" y="419" width="240" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="m156" value="5 : analyser(question, contexte)" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#eb6834;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="835" y="452" as="sourcePoint" />
+            <mxPoint x="1065" y="452" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m157" value="6 : question + libelles seuls" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#eb6834;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1065" y="490" as="sourcePoint" />
+            <mxPoint x="1295" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m158" value="7 : plan de requete JSON" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1295" y="528" as="sourcePoint" />
+            <mxPoint x="1065" y="528" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m159" value="8 : valide contre la base&lt;br&gt;(rejette l'invente)" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=8;endArrow=block;rounded=0;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1065" y="566" as="sourcePoint" />
+            <mxPoint x="1065" y="606" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1125" y="566" />
+              <mxPoint x="1125" y="606" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m160" value="9 : plan valide (ou None si echec)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1065" y="646" as="sourcePoint" />
+            <mxPoint x="835" y="646" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m161" value="10 : requete ORM" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;strokeColor=#0d366b;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="835" y="688" as="sourcePoint" />
+            <mxPoint x="1525" y="688" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m162" value="11 : donnees reelles" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1525" y="726" as="sourcePoint" />
+            <mxPoint x="835" y="726" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m163" value="12 : {reponse, donnees, contexte, moteur}" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="835" y="766" as="sourcePoint" />
+            <mxPoint x="605" y="766" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m164" value="13 : texte + tableau" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endFill=0;strokeColor=#52514e;fontSize=10;fontColor=#52514e;align=center;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="605" y="804" as="sourcePoint" />
+            <mxPoint x="375" y="804" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n165" value="Trois garde-fous&lt;br&gt;&lt;br&gt;1. Aucun chiffre ne vient du modele : ils sortent tous de l'ORM (10-11).&lt;br&gt;2. Aucune donnee nominative n'est transmise (6) : seuls la question et les libelles de services.&lt;br&gt;3. Tout ce que le modele renvoie est revalide (8) ; un service invente est ecarte.&lt;br&gt;&lt;br&gt;Sans clef, ou en cas de panne, le fragment 'opt' est saute : les regles repondent seules." style="shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;fillColor=#fff8e1;strokeColor=#fab219;fontSize=11;spacingLeft=6;spacingTop=2;" vertex="1" parent="1">
+          <mxGeometry x="1650" y="260" width="320" height="260" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

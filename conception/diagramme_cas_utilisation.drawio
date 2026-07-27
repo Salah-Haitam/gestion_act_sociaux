@@ -1,0 +1,184 @@
+<mxfile host="app.diagrams.net" agent="MarsaSocial" type="device">
+  <diagram id="d107" name="Cas d'utilisation">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1620" pageHeight="1310" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n76" value="Diagramme de cas d'utilisation — MarsaSocial" style="text;html=1;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#0d366b;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="520" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="n77" value="L'administrateur RH est le seul acteur humain. Le modele de langage est un acteur secondaire optionnel : son absence n'empeche aucun cas d'utilisation." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="40" y="66" width="900" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="n78" value="MarsaSocial" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#0d366b;strokeWidth=2;verticalAlign=top;fontSize=15;fontStyle=1;fontColor=#0d366b;spacingTop=8;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="130" width="900" height="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="aAdmin" value="Administrateur RH" style="shape=umlActor;verticalLabelPosition=bottom;html=1;verticalAlign=top;outlineConnect=0;fillColor=#0d366b;strokeColor=#0d366b;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="640" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="aLLM" value="Modele de langage&lt;br&gt;(Groq — optionnel)" style="shape=umlActor;verticalLabelPosition=bottom;html=1;verticalAlign=top;outlineConnect=0;fillColor=#0d366b;strokeColor=#0d366b;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="1000" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="n79" value="Authentification" style="text;html=1;align=left;fontSize=11;fontStyle=2;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="355" y="149" width="300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uConnexion" value="Se connecter" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="175" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e80" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uConnexion">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uDeconnexion" value="Se deconnecter" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="237" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e81" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uDeconnexion">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n82" value="Gestion des donnees" style="text;html=1;align=left;fontSize=11;fontStyle=2;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="355" y="304" width="300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uPersonnel" value="Gerer le personnel" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="330" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e83" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uPersonnel">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uActivites" value="Gerer les activites" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="392" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e84" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uActivites">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uTransactions" value="Gerer les transactions" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="454" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e85" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uTransactions">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n86" value="Equite de distribution" style="text;html=1;align=left;fontSize=11;fontStyle=2;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="355" y="524" width="300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uBenef" value="Consulter les beneficiaires" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="550" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e87" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uBenef">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uNonBenef" value="Identifier les non-beneficiaires" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="612" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e88" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uNonBenef">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uAttribuer" value="Attribuer un service" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="674" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e89" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uAttribuer">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n90" value="Pilotage" style="text;html=1;align=left;fontSize=11;fontStyle=2;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="355" y="744" width="300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uBord" value="Consulter le tableau de bord" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="770" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e91" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uBord">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uBudget" value="Suivre le budget" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="832" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e92" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uBudget">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uStats" value="Consulter les statistiques" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="894" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e93" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uStats">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n94" value="Assistance intelligente" style="text;html=1;align=left;fontSize=11;fontStyle=2;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="355" y="964" width="300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uPriorisation" value="Obtenir une priorisation" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="990" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e95" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uPriorisation">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uAssistant" value="Interroger l'assistant" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1052" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e96" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uAssistant">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uClusters" value="Segmenter le personnel" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2a78d6;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1114" width="210" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e97" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#52514e;strokeWidth=1;" edge="1" parent="1" source="aAdmin" target="uClusters">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uVerifier" value="Verifier les regles d'attribution" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1baf7a;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="870" y="555" width="240" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="uExport" value="Exporter (Excel / PDF)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1baf7a;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="870" y="780" width="240" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="uAttestation" value="Editer une attestation" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1baf7a;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="870" y="860" width="240" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="uAnalyseLLM" value="Analyser la question par LLM" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#eb6834;strokeWidth=2;fontSize=11;fontColor=#52514e;" vertex="1" parent="1">
+          <mxGeometry x="870" y="1000" width="240" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="e98" value="&amp;laquo;include&amp;raquo;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#1baf7a;fontSize=10;fontColor=#1baf7a;" edge="1" parent="1" source="uAttribuer" target="uVerifier">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e99" value="&amp;laquo;include&amp;raquo;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#1baf7a;fontSize=10;fontColor=#1baf7a;" edge="1" parent="1" source="uTransactions" target="uVerifier">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e100" value="&amp;laquo;extend&amp;raquo;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#1baf7a;fontSize=10;fontColor=#1baf7a;" edge="1" parent="1" source="uNonBenef" target="uExport">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e101" value="&amp;laquo;extend&amp;raquo;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#1baf7a;fontSize=10;fontColor=#1baf7a;" edge="1" parent="1" source="uStats" target="uExport">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e102" value="&amp;laquo;extend&amp;raquo;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#1baf7a;fontSize=10;fontColor=#1baf7a;" edge="1" parent="1" source="uTransactions" target="uAttestation">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e103" value="&amp;laquo;extend&amp;raquo;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#eb6834;fontSize=10;fontColor=#eb6834;" edge="1" parent="1" source="uAnalyseLLM" target="uAssistant">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e104" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#eb6834;strokeWidth=1;dashed=1;" edge="1" parent="1" source="uAnalyseLLM" target="aLLM">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n105" value="&amp;laquo;extend&amp;raquo; et non &amp;laquo;include&amp;raquo;&lt;br&gt;&lt;br&gt;L'analyse par LLM est facultative : sans clef d'API, ou en cas de panne reseau, l'assistant repond avec son moteur a regles. Le cas de base reste complet sans l'extension." style="shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;fillColor=#fff8e1;strokeColor=#fab219;fontSize=11;spacingLeft=6;spacingTop=2;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="760" width="300" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="n106" value="&amp;laquo;include&amp;raquo; obligatoire&lt;br&gt;&lt;br&gt;Toute attribution declenche le controle des regles : une fois par an, une fois par carriere, ou rotation equitable selon le service." style="shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;fillColor=#e9f7e9;strokeColor=#1baf7a;fontSize=11;spacingLeft=6;spacingTop=2;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="440" width="300" height="130" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
